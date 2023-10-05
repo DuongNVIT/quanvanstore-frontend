@@ -66,7 +66,7 @@ function ProductListPage() {
                             backgroundColor: '#fff',
                             padding: '12px 16px'
                         }}>
-                            <Box>
+                            {/* <Box>
                                 <Typography sx={{
                                     fontSize: '1.6rem',
                                     fontWeight: 'bold',
@@ -105,8 +105,8 @@ function ProductListPage() {
                                 }}>
                                     Phích bơm nước
                                 </Typography>
-                            </Box>
-                            <Divider sx={{ margin: '12px 0' }} />
+                            </Box> */}
+                            {/* <Divider sx={{ margin: '12px 0' }} /> */}
 
                             <Box>
                                 <Typography sx={{
@@ -115,6 +115,7 @@ function ProductListPage() {
                                     textTransform: 'uppercase',
                                     marginBottom: '8px'
                                 }}>Khoảng giá</Typography>
+                                <Divider sx={{ margin: '12px 0 16px' }} />
                                 <Box sx={{
                                     display: 'flex',
                                     alignItems: 'center',
@@ -223,7 +224,7 @@ function ProductListPage() {
                                 }}
                                     label="Phổ biến"
                                 />
-                                <Chip sx={{
+                                {/* <Chip sx={{
                                     borderRadius: '2px',
                                     margin: '0 4px',
                                     // background: 'linear-gradient(to right, #1A4EB5, #0292CB)',
@@ -244,7 +245,7 @@ function ProductListPage() {
                                     padding: '0 4px'
                                 }}
                                     label="Bán chạy"
-                                />
+                                /> */}
                                 <Chip sx={{
                                     borderRadius: '2px',
                                     margin: '0 4px',

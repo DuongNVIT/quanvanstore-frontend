@@ -83,7 +83,7 @@ function MyProfilePage() {
                                             <Typography sx={{fontSize: '1.4rem'}}>Đổi mật khẩu</Typography>
                                         </Link>
                                     </Box>
-                                    <Box sx={{
+                                    {/* <Box sx={{
                                         display: 'flex',
                                         alignItems: 'center',
                                         color: '#545866',
@@ -95,7 +95,7 @@ function MyProfilePage() {
                                             width: '40px'
                                         }} />
                                         <Typography sx={{fontSize: '1.4rem'}}>Thông báo</Typography>
-                                    </Box>
+                                    </Box> */}
                                 </Box>
                             </Box>
                         </Grid>

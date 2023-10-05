@@ -124,7 +124,7 @@ function ShoppingCartPage() {
                                                             component='img'
                                                             src={row.product.thumbnail}
                                                             sx={{
-                                                                minWidth: '50px',
+                                                                width: '50px',
                                                                 height: '50px',
                                                                 marginRight: '20px',
                                                                 border: '1px solid rgba(0, 0, 0, 0.2)',

@@ -8,7 +8,7 @@ import { pushNotification } from '../../store/actions/pushNotification'
 import { updateAlertModal } from '../../store/actions/alert'
 import { useNavigate } from 'react-router-dom'
 
-function ModalSignInSignUp({ open, onClose }) {
+function SignUp({ open, onClose }) {
 
     const [isLogin, setIsLogin] = useState(true);
 
@@ -52,6 +52,8 @@ function ModalSignInSignUp({ open, onClose }) {
                 isOpen: true,
                 message: 'Đăng ký tài khoản thành công!'
             }))
+            signupUser(prev => {})
+            onClose();
         } catch (error) {
             setLoginFailed(error.response.data.message)
         }
@@ -78,7 +80,7 @@ function ModalSignInSignUp({ open, onClose }) {
                         fontWeight: 'bold',
                     }}
                 >
-                    Đăng nhập
+                    Đăng ký
                 </Typography>
 
                 <Divider sx={{
@@ -90,8 +92,8 @@ function ModalSignInSignUp({ open, onClose }) {
                     variant="outlined"
                     placeholder='Nhập tên đăng nhập'
                     inputProps={{ style: { fontSize: '1.5rem' } }}
-                    value={user.username}
-                    onChange={(e) => setUser({ ...user, username: e.target.value })}
+                    value={signupUser?.username}
+                    onChange={(e) => setSignupUser({ ...signupUser, username: e.target.value })}
                     sx={{
                         width: '100%',
                         fontSize: '1.6rem',
@@ -113,9 +115,55 @@ function ModalSignInSignUp({ open, onClose }) {
                     placeholder='Nhập mật khẩu'
                     inputProps={{ style: { fontSize: '1.5rem' } }}
                     type="password"
-                    value={user.password}
-                    onChange={(e) => setUser({ ...user, password: e.target.value })}
+                    value={signupUser?.password}
+                    onChange={(e) => setSignupUser({ ...signupUser, password: e.target.value })}
                     sx={{
+                        width: '100%',
+                        fontSize: '1.6rem',
+                        border: '1px solid rgba(0,0,0,0.2)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        padding: '6px 12px',
+                        borderRadius: '3px',
+                        '&:hover': {
+                            outline: 'none',
+                        }
+                    }}
+                />
+                <InputBase
+                    id="outlined-basic"
+                    // label="Outlined"
+                    variant="outlined"
+                    placeholder='Nhập họ và tên'
+                    inputProps={{ style: { fontSize: '1.5rem' } }}
+                    type="text"
+                    value={signupUser?.fullname}
+                    onChange={(e) => setSignupUser({ ...signupUser, fullname: e.target.value })}
+                    sx={{
+                        marginTop: '20px',
+                        width: '100%',
+                        fontSize: '1.6rem',
+                        border: '1px solid rgba(0,0,0,0.2)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        padding: '6px 12px',
+                        borderRadius: '3px',
+                        '&:hover': {
+                            outline: 'none',
+                        }
+                    }}
+                />
+                <InputBase
+                    id="outlined-basic"
+                    // label="Outlined"
+                    variant="outlined"
+                    placeholder='Nhập email'
+                    inputProps={{ style: { fontSize: '1.5rem' } }}
+                    type="text"
+                    value={signupUser.email}
+                    onChange={(e) => setSignupUser({ ...signupUser, email: e.target.value })}
+                    sx={{
+                        marginTop: '20px',
                         width: '100%',
                         fontSize: '1.6rem',
                         border: '1px solid rgba(0,0,0,0.2)',
@@ -133,7 +181,7 @@ function ModalSignInSignUp({ open, onClose }) {
                     fontSize: '1.5rem',
                     margin: '10px 0 -10px'
                 }}>
-                    {loginFailed}
+                    {signupFailed}
                 </Typography>
                 <Button
                     variant='contained'
@@ -149,13 +197,13 @@ function ModalSignInSignUp({ open, onClose }) {
                             opacity: '0.8'
                         }
                     }}
-                    onClick={handleSignin}
+                    onClick={handleSignUp}
                 >
-                    Đăng nhập
+                    Đăng ký
                 </Button>
             </Box>
         </Modal>
     )
 }
 
-export default ModalSignInSignUp
+export default SignUp

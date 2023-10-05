@@ -1,7 +1,7 @@
 import React from 'react'
 import Header from '../components/Header/Header'
 import Footer from '../components/Footer/Footer'
-import { Box, Button, Container, Divider, Grid, Paper, Typography } from '@mui/material'
+import { Avatar, Box, Button, Container, Divider, Grid, Paper, Rating, Typography } from '@mui/material'
 import { PhoneInTalk } from '@mui/icons-material'
 import ProductItem from '../components/ProductItem/ProductItem'
 import { useEffect } from 'react'
@@ -12,13 +12,50 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import cartService from '../services/cartService'
 import formatMoney from '../utils/formatMoney'
+import ratingService from '../services/ratingService'
 
 function ProductDetailPage() {
 
     const { id } = useParams();
     const [product, setProduct] = useState(null);
+    const [relevantProducts, setRelevantProducts] = useState([]);
     const [quantity, setQuantity] = useState(1);
+    const [rating, setRating] = useState([]);
     const navigate = useNavigate();
+
+    const handleGetRating = async (id) => {
+        try {
+            const res = await ratingService.getAll(id);
+            console.log("rating");
+            console.log(res);
+            setRating(res.data.data)
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    useEffect(() => {
+        handleGetRating(id);
+    }, [])
+
+    const handleGetRelevantProducts = async () => {
+        try {
+            const res = await productService.getReleventProduct(id);
+            console.log(res);
+            setRelevantProducts(res.data.data);
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    useEffect(() => {
+        handleGetRelevantProducts();
+    }, [])
+
+    useEffect(() => {
+        handleGetProduct();
+        handleGetRelevantProducts();
+    }, [id])
 
     const handleGetProduct = async () => {
         try {
@@ -121,7 +158,7 @@ function ProductDetailPage() {
                                             -
                                         </Box>
                                         <Divider orientation="vertical" flexItem />
-                                        <Box component='span' sx={{  width: '36px', textAlign: 'center' }}>{quantity}</Box>
+                                        <Box component='span' sx={{ width: '36px', textAlign: 'center' }}>{quantity}</Box>
                                         <Divider orientation="vertical" flexItem />
                                         <Box
                                             sx={{ color: '#73798C', fontSize: '1.6rem', padding: '4px 12px', display: 'flex', alignItems: 'center', cursor: 'pointer' }}
@@ -179,22 +216,18 @@ function ProductDetailPage() {
                                 }}>
                                     Chi tiết sản phẩm
                                 </Box>
-                                <Box sx={{
-                                    fontSize: '1.4rem',
-                                    padding: '12px'
-                                }}>
-                                    MÔ TẢ SẢN PHẨM Áo thun nam nữ oversize LAMO Store phong cách unisex form rộng tay ngắn, cổ tròn màu-
-                                    - Áo thun nam nữ oversize sử dụng chất vải cotton 65/35 co giãn 4 chiều. Là loại vải có đặc điểm mềm mịn, độ co giãn cao, khả năng thấm hút tốt và được dệt hoàn toàn từ sợi cây bông tự nhiên. Chất vải cotton cực kỳ thân thiện với làn da.
-                                    - Áo thun nam nữ form rộng cổ tròn thoải mái
-                                    - Áo phông unisex form rộng dễ phối đồ. Bạn có thể phối với quần jean, chân váy, … kết hợp với một đôi sneaker cho bạn tự tin xuống phố
-
-                                    - BẢNG SIZE SẢN PHẨM Áo thun nam nữ oversize LAMO Store phong cách unisex form rộng tay ngắn, cổ tròn màu trắng hình TNT-LAB trái tim xanh CỦA LAMO Store
-                                    - Quý khách vui lòng xem Áo phông nam nữ oversize tại Ảnh sản phẩm hoặc Bảng quy đổi kích cỡ
-                                    - Hướng dẫn chọn size áo thun unisex form rộng tay ngắn:
-                                    + Size M: 46-53kg
-                                    + Size L: 63-74kg
-                                    + Size XL: 75-84kg
-                                </Box>
+                                {product && product.description &&
+                                    <Box
+                                        sx={{
+                                            fontSize: '1.4rem',
+                                            padding: '12px'
+                                        }}
+                                        component="div"
+                                        className="product-description"
+                                        dangerouslySetInnerHTML={{ __html: product?.description }}
+                                    />}
+                                {/* <div dangerouslySetInnerHTML={{ __html: product?.description }}/>
+                                    </Box>} */}
                             </Box>
                             <Box>
                                 <Box sx={{
@@ -205,6 +238,45 @@ function ProductDetailPage() {
                                 }}>
                                     Đánh giá sản phẩm
                                 </Box>
+                                {
+                                    rating.map((item, index) => {
+                                        return (
+                                            <>
+                                                <Box sx={{
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    padding: '12px 8px'
+                                                }}>
+                                                    <Box sx={{
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        width: '140px'
+                                                    }}>
+                                                        <Avatar sx={{
+                                                            width: '40px',
+                                                            height: '40px'
+                                                        }} />
+                                                        <Box sx={{ margin: '0 10px' }}>
+                                                            <Typography sx={{
+                                                                fontSize: '1.2rem',
+                                                                color: 'rgba(0, 0, 0, 0.7)'
+                                                            }}>{item.username}</Typography>
+                                                            <Rating value={item.rate} sx={{
+                                                                fontSize: '1.3rem'
+                                                            }} />
+                                                        </Box>
+                                                    </Box>
+                                                    <Typography sx={{
+                                                        fontStyle: 'italic',
+                                                        fontSize: '1.4rem',
+                                                        color: 'rgba(0, 0,0, 0.8)'
+                                                    }}>{item.content}</Typography>
+                                                </Box>
+                                                <Divider />
+                                            </>
+                                        )
+                                    })
+                                }
                             </Box>
                         </Grid>
                     </Grid>
@@ -294,27 +366,22 @@ function ProductDetailPage() {
                         </Box>
                         <Divider />
                         <Grid container spacing={2} sx={{ padding: '16px' }}>
-                            {/* <Grid item md={2.4}>
-                                <ProductItem />
-                            </Grid>
-                            <Grid item md={2.4}>
-                                <ProductItem />
-                            </Grid>
-                            <Grid item md={2.4}>
-                                <ProductItem />
-                            </Grid>
-                            <Grid item md={2.4}>
-                                <ProductItem />
-                            </Grid>
-                            <Grid item md={2.4}>
-                                <ProductItem />
-                            </Grid> */}
+                            {
+                                relevantProducts.map((item, index) => {
+                                    return (
+                                        <Grid item md={2.4} key={index}>
+                                            <ProductItem product={item} />
+                                        </Grid>
+                                    )
+                                })
+                            }
+
                         </Grid>
                     </Grid>
                 </Grid>
             </Container>
             <Footer />
-        </Box>
+        </Box >
     )
 }
 

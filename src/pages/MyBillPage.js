@@ -5,6 +5,9 @@ import { Avatar, Box, Button, Chip, Container, Divider, Grid, InputBase, List, L
 import { AccountBox, AccountCircleOutlined, Camera, CameraAlt, FactCheckOutlined, LocalShippingOutlined, LockOutlined, NotificationsOutlined } from '@mui/icons-material'
 
 function MyBillPage() {
+
+
+
     return (
         <Box>
             <Header />
@@ -98,11 +101,99 @@ function MyBillPage() {
                             </Box>
                         </Grid>
                         <Grid item md={9.5}>
-                            
+
                         </Grid>
                     </Grid>
                 </Container>
             </Box>
+            <Modal
+                open={open}
+                onClose={handleClose}
+                aria-labelledby="modal-modal-title"
+                aria-describedby="modal-modal-description"
+            >
+                <Box sx={style}>
+                    <Typography
+                        variant="h2"
+                        sx={{
+                            fontSize: '1.8rem',
+                            fontWeight: '500',
+                            marginBottom: '12px'
+                        }}
+                    >
+                        Đánh giá sản phẩm
+                    </Typography>
+                    <Divider />
+                    <Grid container spacing={2} sx={{ marginTop: '20px' }}>
+                        <Grid item md={12}>
+
+                            <Box sx={{
+                                marginBottom: '20px'
+                            }}>
+                                <Box sx={{
+                                    display: 'flex',
+                                    alignItems: 'center'
+                                }}>
+                                    <Box component='label' sx={{
+                                        width: '140px',
+                                        textAlign: 'right',
+                                        padding: '0 12px',
+                                        fontSize: '1.5rem',
+                                        color: '#545866'
+                                    }}>
+                                        Tên danh mục
+                                    </Box>
+                                    <InputBase
+                                        required
+                                        id="outlined-basic"
+                                        placeholder='Nhập danh mục'
+                                        variant='outlined'
+                                        onChange={(e) => setCategoryToAdd({ ...categoryToAdd, name: e.target.value })}
+                                        sx={{
+                                            flex: 1,
+                                            borderRadius: '2px',
+                                            border: '1px solid rgba(0, 0, 0, 0.3)',
+                                            padding: '4px 8px',
+                                            fontSize: '1.4rem'
+                                        }}
+                                        value={categoryToAdd?.name}
+                                    />
+                                </Box>
+                            </Box>
+                            <Box sx={{
+                                marginBottom: '20px'
+                            }}>
+                                <Box sx={{
+                                    display: 'flex',
+                                    alignItems: 'center'
+                                }}>
+                                    <Box component='label' sx={{
+                                        width: '140px',
+                                        textAlign: 'right',
+                                        padding: '0 12px',
+                                        fontSize: '1.5rem',
+                                        color: '#545866'
+                                    }}>
+
+                                    </Box>
+                                    <Button
+                                        variant='contained'
+                                        sx={{
+                                            borderRadius: '2px',
+                                            color: '#fff',
+                                            flex: '1',
+                                            fontSize: '1.3rem'
+                                        }}
+                                        onClick={handleAddCategory}
+                                    >
+                                        Lưu
+                                    </Button>
+                                </Box>
+                            </Box>
+                        </Grid>
+                    </Grid>
+                </Box>
+            </Modal>
             <Footer />
         </Box>
     )

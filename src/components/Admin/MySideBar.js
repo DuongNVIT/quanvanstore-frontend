@@ -1,12 +1,14 @@
 import React from 'react'
 import { Avatar, Box, Button, Divider, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Typography } from '@mui/material'
-import { ArticleOutlined, CategoryOutlined, GroupOutlined, HelpOutline, HomeOutlined, InventoryOutlined, LogoutOutlined, ShoppingCartOutlined } from '@mui/icons-material';
-
+import { ArticleOutlined, InfoOutlined, PhotoLibraryOutlined, ViewCarouselOutlined, CategoryOutlined, GroupOutlined, HelpOutline, HomeOutlined, InventoryOutlined, LogoutOutlined, ShoppingCartOutlined } from '@mui/icons-material';
 // third-party
 import PerfectScrollbar from 'react-perfect-scrollbar';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 function MySideBar() {
+
+    const navigate = useNavigate();
+
     return (
         <PerfectScrollbar component='div'>
             <Box sx={{
@@ -62,30 +64,32 @@ function MySideBar() {
                         }}>
                             Dashboard
                         </Typography>
-                        <ListItem sx={{
-                            padding: '0 8px'
-                        }}>
-                            <ListItemButton sx={{
-                                '&:hover': {
-                                    borderRadius: '8px'
-                                }
+                        <Link to="statistic">
+                            <ListItem sx={{
+                                padding: '0 8px'
                             }}>
-                                <ListItemIcon sx={{
-                                    fontSize: '1.9rem',
-                                    minWidth: 'unset',
-                                    width: '32px',
+                                <ListItemButton sx={{
+                                    '&:hover': {
+                                        borderRadius: '8px'
+                                    }
                                 }}>
-                                    <HomeOutlined sx={{ fontSize: '1.9rem' }} />
-                                </ListItemIcon>
-                                <ListItemText
-                                    primary="Trang quản trị"
-                                    primaryTypographyProps={{
-                                        fontSize: '1.4rem',
-                                        color: '#73798C'
-                                    }}
-                                />
-                            </ListItemButton>
-                        </ListItem>
+                                    <ListItemIcon sx={{
+                                        fontSize: '1.9rem',
+                                        minWidth: 'unset',
+                                        width: '32px',
+                                    }}>
+                                        <HomeOutlined sx={{ fontSize: '1.9rem' }} />
+                                    </ListItemIcon>
+                                    <ListItemText
+                                        primary="Trang quản trị"
+                                        primaryTypographyProps={{
+                                            fontSize: '1.4rem',
+                                            color: '#73798C'
+                                        }}
+                                    />
+                                </ListItemButton>
+                            </ListItem>
+                        </Link>
                     </List>
                 </Box>
                 <Divider />
@@ -178,32 +182,6 @@ function MySideBar() {
                             </ListItem>
                         </Link>
 
-                        <Link to="news">
-                            <ListItem sx={{
-                                padding: '0 8px'
-                            }}>
-                                <ListItemButton sx={{
-                                    '&:hover': {
-                                        borderRadius: '8px'
-                                    }
-                                }}>
-                                    <ListItemIcon sx={{
-                                        fontSize: '1.9rem',
-                                        minWidth: 'unset',
-                                        width: '32px',
-                                    }}>
-                                        <ArticleOutlined sx={{ fontSize: '1.9rem' }} />
-                                    </ListItemIcon>
-                                    <ListItemText
-                                        primary="Quản lý tin tức"
-                                        primaryTypographyProps={{
-                                            fontSize: '1.4rem',
-                                            color: '#73798C'
-                                        }}
-                                    />
-                                </ListItemButton>
-                            </ListItem>
-                        </Link>
                         <Link to="category">
                             <ListItem sx={{
                                 padding: '0 8px'
@@ -230,6 +208,110 @@ function MySideBar() {
                                 </ListItemButton>
                             </ListItem>
                         </Link>
+                        <Link to="news">
+                            <ListItem sx={{
+                                padding: '0 8px'
+                            }}>
+                                <ListItemButton sx={{
+                                    '&:hover': {
+                                        borderRadius: '8px'
+                                    }
+                                }}>
+                                    <ListItemIcon sx={{
+                                        fontSize: '1.9rem',
+                                        minWidth: 'unset',
+                                        width: '32px',
+                                    }}>
+                                        <ArticleOutlined sx={{ fontSize: '1.9rem' }} />
+                                    </ListItemIcon>
+                                    <ListItemText
+                                        primary="Quản lý tin tức"
+                                        primaryTypographyProps={{
+                                            fontSize: '1.4rem',
+                                            color: '#73798C'
+                                        }}
+                                    />
+                                </ListItemButton>
+                            </ListItem>
+                        </Link>
+                        <Link to="banner">
+                            <ListItem sx={{
+                                padding: '0 8px'
+                            }}>
+                                <ListItemButton sx={{
+                                    '&:hover': {
+                                        borderRadius: '8px'
+                                    }
+                                }}>
+                                    <ListItemIcon sx={{
+                                        fontSize: '1.9rem',
+                                        minWidth: 'unset',
+                                        width: '32px',
+                                    }}>
+                                        <ViewCarouselOutlined sx={{ fontSize: '1.9rem' }} />
+                                    </ListItemIcon>
+                                    <ListItemText
+                                        primary="Quản lý banner"
+                                        primaryTypographyProps={{
+                                            fontSize: '1.4rem',
+                                            color: '#73798C'
+                                        }}
+                                    />
+                                </ListItemButton>
+                            </ListItem>
+                        </Link>
+                        <Link to="images">
+                            <ListItem sx={{
+                                padding: '0 8px'
+                            }}>
+                                <ListItemButton sx={{
+                                    '&:hover': {
+                                        borderRadius: '8px'
+                                    }
+                                }}>
+                                    <ListItemIcon sx={{
+                                        fontSize: '1.9rem',
+                                        minWidth: 'unset',
+                                        width: '32px',
+                                    }}>
+                                        <PhotoLibraryOutlined sx={{ fontSize: '1.9rem' }} />
+                                    </ListItemIcon>
+                                    <ListItemText
+                                        primary="Quản lý thư viện ảnh"
+                                        primaryTypographyProps={{
+                                            fontSize: '1.4rem',
+                                            color: '#73798C'
+                                        }}
+                                    />
+                                </ListItemButton>
+                            </ListItem>
+                        </Link>
+                        <Link to="general-infor">
+                            <ListItem sx={{
+                                padding: '0 8px'
+                            }}>
+                                <ListItemButton sx={{
+                                    '&:hover': {
+                                        borderRadius: '8px'
+                                    }
+                                }}>
+                                    <ListItemIcon sx={{
+                                        fontSize: '1.9rem',
+                                        minWidth: 'unset',
+                                        width: '32px',
+                                    }}>
+                                        <InfoOutlined sx={{ fontSize: '1.9rem' }} />
+                                    </ListItemIcon>
+                                    <ListItemText
+                                        primary="Quản lý thông tin"
+                                        primaryTypographyProps={{
+                                            fontSize: '1.4rem',
+                                            color: '#73798C'
+                                        }}
+                                    />
+                                </ListItemButton>
+                            </ListItem>
+                        </Link>
                     </List>
                 </Box>
                 <Divider />
@@ -244,7 +326,15 @@ function MySideBar() {
                         </Typography>
                         <ListItem sx={{
                             padding: '0 8px'
-                        }}>
+
+                        }}
+                            onClick={() => {
+                                localStorage.removeItem("quanvanUser")
+                                localStorage.removeItem("token")
+                                navigate("/")
+                            }}
+                        >
+
                             <ListItemButton sx={{
                                 '&:hover': {
                                     borderRadius: '8px'

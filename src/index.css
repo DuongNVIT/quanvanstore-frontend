@@ -8,9 +8,17 @@ body {
   background-color: #F5F5FA;
   box-sizing: border-box;
 }
+html {
+  /* scroll-behavior: smooth; */
+}
+ 
+* {
+  box-sizing: border-box;
+}
 
 :root {
   font-size: 10px;
+  box-sizing: border-box;
 }
 
 code {
@@ -25,4 +33,8 @@ code {
 a {
   text-decoration: none;
   color: inherit;
+}
+
+.product-description img {
+  width: '100%'
 }

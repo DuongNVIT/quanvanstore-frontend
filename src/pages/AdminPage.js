@@ -8,6 +8,10 @@ import ManageProduct from '../components/Admin/ManageProduct';
 import ManageNews from '../components/Admin/ManageNews';
 import ManageCategory from '../components/Admin/ManageCategory';
 import ManageOrder from '../components/Admin/ManageOrder';
+import ManageBanner from '../components/Admin/ManageBanner';
+import ManageImages from '../components/Admin/ManageImages';
+import ManageGeneralInfor from '../components/Admin/ManageGeneralInfor';
+import ManageStatistic from '../components/Admin/ManageStatistic';
 // import SearchIcon from '@mui/icons-material/icons'
 
 function AdminPage() {
@@ -90,12 +94,17 @@ function AdminPage() {
 
 
                 {/* Quản lý người dùng */}
+
                 <Routes>
+                    <Route path="statistic" element={<ManageStatistic/>}/>
                     <Route path="user" element={<ManageUser/>}/>
                     <Route path="product" element={<ManageProduct/>}/>
                     <Route path="news" element={<ManageNews/>}/>
                     <Route path="order" element={<ManageOrder/>}/>
                     <Route path="category" element={<ManageCategory/>}/>
+                    <Route path="banner" element={<ManageBanner/>}/>
+                    <Route path="images" element={<ManageImages/>}/>
+                    <Route path="general-infor" element={<ManageGeneralInfor/>}/>
                 </Routes>
 
             </Box>

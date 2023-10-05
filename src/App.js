@@ -16,6 +16,8 @@ import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { pushNotification } from './store/actions/pushNotification';
 import OrderPage from './pages/OrderPage';
+import NewsPage from './pages/NewsPage';
+import GeneralInforPage from './pages/GeneralInforPage';
 
 function App() {
     const location = useLocation();
@@ -56,6 +58,8 @@ function App() {
                 <Route path="/profile/*" element={<MyProfilePage />} />
                 <Route path="/list" element={<ProductListPage />} />
                 <Route path="/order" element={<OrderPage />} />
+                <Route path="/general-infor" element={<GeneralInforPage />} />
+                <Route path="/news/:id" element={<NewsPage />} />
                 <Route path="/admin/*" element={<AdminPage />} />
                 <Route path="/test" element={<TestPage />} />
             </Routes>

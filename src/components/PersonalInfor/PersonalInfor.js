@@ -1,8 +1,43 @@
 import { CameraAlt } from '@mui/icons-material'
 import { Avatar, Box, Button, Divider, Grid, InputBase, Typography } from '@mui/material'
 import React from 'react'
+import { useState } from 'react'
+import authService from '../../services/authService';
+import { useEffect } from 'react';
+import { useDispatch } from 'react-redux';
+import { updateAlertModal } from '../../store/actions/alert';
 
 function PersonalInfor() {
+
+    const [myProfile, setMyProfile] = useState({});
+
+    const dispatch = useDispatch();
+
+    const handleGetMyProfile = async () => {
+        try {
+            const res = await authService.getProfile();
+            setMyProfile(res.data.data);
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    const handleChangeProfile = async () => {
+        try {
+            const res = await authService.changeProfile(myProfile);
+            dispatch(updateAlertModal({
+                isOpen: true,
+                message: "Cập nhật thông tin thành công!"
+            }))
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    useEffect(() => {
+        handleGetMyProfile();
+    }, [])
+
     return (
         <Box sx={{
             padding: '16px',
@@ -32,12 +67,11 @@ function PersonalInfor() {
                                 fontSize: '1.5rem',
                                 color: '#545866'
                             }}>
-                                Tên đăng nhập
+                                Họ và tên
                             </Box>
                             <InputBase
                                 required
                                 id="outlined-basic"
-                                placeholder='Tên đăng nhập'
                                 variant='outlined'
                                 sx={{
                                     flex: 1,
@@ -46,37 +80,8 @@ function PersonalInfor() {
                                     padding: '4px 8px',
                                     fontSize: '1.4rem'
                                 }}
-                            />
-                        </Box>
-                    </Box>
-                    <Box sx={{
-                        marginBottom: '20px'
-                    }}>
-                        <Box sx={{
-                            display: 'flex',
-                            alignItems: 'center'
-                        }}>
-                            <Box component='label' sx={{
-                                width: '150px',
-                                textAlign: 'right',
-                                padding: '0 12px',
-                                fontSize: '1.5rem',
-                                color: '#545866'
-                            }}>
-                                Tên
-                            </Box>
-                            <InputBase
-                                required
-                                id="outlined-basic"
-                                placeholder='Nguyễn Văn Đương'
-                                variant='outlined'
-                                sx={{
-                                    flex: 1,
-                                    borderRadius: '2px',
-                                    border: '1px solid rgba(0, 0, 0, 0.3)',
-                                    padding: '4px 8px',
-                                    fontSize: '1.4rem'
-                                }}
+                                value={myProfile?.fullname}
+                                onChange={(e) => setMyProfile({ ...myProfile, fullname: e.target.value })}
                             />
                         </Box>
                     </Box>
@@ -99,7 +104,6 @@ function PersonalInfor() {
                             <InputBase
                                 required
                                 id="outlined-basic"
-                                placeholder='duong.nv194260@sis.hust.edu.vn'
                                 variant='outlined'
                                 sx={{
                                     flex: 1,
@@ -108,6 +112,9 @@ function PersonalInfor() {
                                     padding: '4px 8px',
                                     fontSize: '1.4rem'
                                 }}
+                                value={myProfile?.email}
+                                onChange={(e) => setMyProfile({ ...myProfile, email: e.target.value })}
+
                             />
                         </Box>
                     </Box>
@@ -130,7 +137,6 @@ function PersonalInfor() {
                             <InputBase
                                 required
                                 id="outlined-basic"
-                                placeholder='0522081512'
                                 variant='outlined'
                                 sx={{
                                     flex: 1,
@@ -139,6 +145,9 @@ function PersonalInfor() {
                                     padding: '4px 8px',
                                     fontSize: '1.4rem'
                                 }}
+                                value={myProfile?.phone}
+                                onChange={(e) => setMyProfile({ ...myProfile, phone: e.target.value })}
+
                             />
                         </Box>
                     </Box>
@@ -165,7 +174,9 @@ function PersonalInfor() {
                                     color: '#fff',
                                     flex: '1',
                                     fontSize: '1.3rem'
-                                }}>
+                                }}
+                                onClick={handleChangeProfile}
+                            >
                                 Lưu thay đổi
                             </Button>
                         </Box>

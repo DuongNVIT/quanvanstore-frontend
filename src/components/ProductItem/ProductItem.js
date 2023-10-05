@@ -68,9 +68,9 @@ export default function MediaCard({ product }) {
                 <CardContent sx={{ padding: '12px 12px 4px' }}>
                     <Typography variant="h5" component="div"
                         sx={{
-                            maxHeight: '40px',
-                            // lineHeight: "1.5em",
-                            // height: "3em",
+                            minHeight: '3em',
+                            lineHeight: "1.5em",
+                            height: "3em",
                             overflow: "hidden",
                             // whiteSpace: "nowrap",
                             // textOverflow: "ellipsis",

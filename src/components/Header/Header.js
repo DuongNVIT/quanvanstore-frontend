@@ -13,6 +13,7 @@ import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { updateProductFilter } from '../../store/actions/productFilter';
 import { useEffect } from 'react';
+import SignUp from '../SignUp/SignUp';
 
 function Header() {
 
@@ -21,6 +22,7 @@ function Header() {
     const pushNoti = useSelector(state => state.pushNotification)
 
     const [showModalSigninSignup, setShowModalSigninSignup] = useState(false);
+    const [showModalSignUp, setShowModalSignup] = useState(false);
     const [showUserMenu, setShowUserMenu] = useState(false);
     const [productSearchName, setProductSearchName] = useState("");
     const [anchorEl, setAnchorEl] = useState(null);
@@ -106,17 +108,19 @@ function Header() {
                                         Hotline: 0973718908
                                     </Typography>
                                 </Box>
-                                <Box sx={{ display: 'flex', alignItems: 'center', }}>
-                                    <LocalMall sx={{
-                                        fontSize: '2.0rem'
-                                    }} />
-                                    <Typography sx={{
-                                        marginLeft: 1,
-                                        fontSize: '1.3rem'
-                                    }}>
-                                        Thông tin cửa hàng
-                                    </Typography>
-                                </Box>
+                                <Link to="general-infor">
+                                    <Box sx={{ display: 'flex', alignItems: 'center', }}>
+                                        <LocalMall sx={{
+                                            fontSize: '2.0rem'
+                                        }} />
+                                        <Typography sx={{
+                                            marginLeft: 1,
+                                            fontSize: '1.3rem'
+                                        }}>
+                                            Thông tin cửa hàng
+                                        </Typography>
+                                    </Box>
+                                </Link>
                             </Box>
                             <Box sx={{ display: 'flex', alignItems: 'center' }}>
                                 <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center', marginRight: 2, cursor: 'pointer' }} onClick={handleOpenNoti}>
@@ -237,12 +241,15 @@ function Header() {
                                     <Feed sx={{
                                         fontSize: '2.0rem'
                                     }} />
-                                    <Typography sx={{
-                                        marginLeft: 1,
-                                        fontSize: '1.3rem'
-                                    }}>
-                                        Tin tức
-                                    </Typography>
+                                    <Link to="/#newsSection">
+                                        <Typography sx={{
+                                            marginLeft: 1,
+                                            fontSize: '1.3rem'
+                                        }}>
+                                            <a href="#newsSection">Tin tức</a>
+                                            {/* Tin tức */}
+                                        </Typography>
+                                    </Link>
                                 </Box>
                             </Box>
 
@@ -280,7 +287,7 @@ function Header() {
 
                             <Link to="/cart">
                                 <Badge
-                                    badgeContent="3"
+                                    // badgeContent="0"
                                     sx={{
                                         backgroundColor: '#fff',
                                         padding: '6px',
@@ -299,14 +306,33 @@ function Header() {
 
                             {
                                 !localStorage.getItem("quanvanUser")
-                                    ? <Button
-                                        startIcon={<AccountCircleIcon />}
-                                        variant='outlined'
-                                        sx={{ color: 'white', borderColor: 'white', fontSize: '1.3rem' }}
-                                        onClick={() => setShowModalSigninSignup(true)}
-                                    >
-                                        Đăng nhập
-                                    </Button>
+                                    ? <Box>
+                                        <Button
+                                            // startIcon={<AccountCircleIcon />}
+                                            variant='outlined'
+                                            sx={{
+                                                color: 'white', borderColor: 'white', fontSize: '1.3rem',
+                                                textTransform: 'none'
+                                            }}
+                                            onClick={() => setShowModalSignup(true)}
+                                        >
+                                            Đăng ký
+                                        </Button>
+                                        <Button
+                                            // startIcon={<AccountCircleIcon />}
+                                            variant='outlined'
+                                            sx={{
+                                                color: 'white',
+                                                fontSize: '1.3rem',
+                                                textTransform: 'none',
+                                                marginLeft: '8px',
+                                                backgroundColor: '#1A4FB6'
+                                            }}
+                                            onClick={() => setShowModalSigninSignup(true)}
+                                        >
+                                            Đăng nhập
+                                        </Button>
+                                    </Box>
                                     :
                                     <Button
                                         id="basic-button"
@@ -392,6 +418,12 @@ function Header() {
                 open={showModalSigninSignup}
                 onClose={() => setShowModalSigninSignup(false)}
             />
+            {showModalSignUp && <SignUp
+                open={showModalSignUp}
+                onClose={() => setShowModalSignup(false)}
+            />}
+
+
         </Box>
 
     )

@@ -1,8 +1,10 @@
-import { CameraAlt, ModeEditOutline } from '@mui/icons-material'
+import { AddCircleOutline, CameraAlt, DeleteForeverOutlined, ModeEditOutline } from '@mui/icons-material'
 import { Avatar, Box, Button, Divider, Grid, InputBase, Modal, Switch, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material'
 import React, { useEffect } from 'react'
 import { useState } from 'react';
 import categoryService from '../../services/categoryService';
+import { useDispatch } from 'react-redux';
+import { updateAlertModal } from '../../store/actions/alert';
 
 const style = {
     position: 'absolute',
@@ -19,6 +21,9 @@ function ManageCategory() {
 
     const [open, setOpen] = useState(false);
     const [categories, setCategories] = useState([]);
+    const [categoryToAdd, setCategoryToAdd] = useState({});
+    const dispatch = useDispatch();
+
 
     const handleGetAllCategories = async () => {
         try {
@@ -30,17 +35,37 @@ function ManageCategory() {
         }
     }
 
+    const handleAddCategory = async () => {
+        try {
+            const ans = await categoryService.createCategory(categoryToAdd);
+            dispatch(updateAlertModal({
+                isOpen: true,
+                message: "Thao tác thành công!"
+            }))
+            handleClose();
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    const handleOpenUpdateCategory = (category) => {
+        setCategoryToAdd(prev => category);
+        setOpen(prev => true)
+    } 
+
+
+
     useEffect(() => {
         handleGetAllCategories();
     }, [])
 
     const handleClose = () => {
-        setOpen(false);
+        setOpen(prev => false);
+        setCategoryToAdd(prev =>{})
+        handleGetAllCategories();
     }
 
-    const handleOpen = () => {
-        setOpen(true);
-    }
+
     return (
         <Box sx={{
             backgroundColor: '#EEF2F6',
@@ -56,26 +81,43 @@ function ManageCategory() {
                 <Box sx={{
                     backgroundColor: '#fff',
                     borderRadius: '5px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between'
                 }}>
-                    <Typography
-                        variant="h1"
+                    <Box>
+                        <Typography
+                            variant="h1"
+                            sx={{
+                                fontSize: '2rem',
+                                fontWeight: '500',
+                                letterSpacing: '.05rem',
+                                color: '#131928',
+                            }}>
+                            Danh mục sản phẩm
+                        </Typography>
+                        <Typography
+                            variant="h3"
+                            sx={{
+                                fontSize: '1.2rem',
+                                color: '#5E35B1',
+                                margin: '6px 0 0'
+                            }}>
+                            Trang quản lý danh mục
+                        </Typography>
+                    </Box>
+                    <Button
+                        startIcon={<AddCircleOutline />}
+                        variant='contained'
                         sx={{
-                            fontSize: '2rem',
-                            fontWeight: '500',
-                            letterSpacing: '.05rem',
-                            color: '#131928',
-                        }}>
-                        Danh mục sản phẩm
-                    </Typography>
-                    <Typography
-                        variant="h3"
-                        sx={{
+                            textTransform: 'none',
                             fontSize: '1.2rem',
-                            color: '#5E35B1',
-                            margin: '6px 0 0'
-                        }}>
-                        Trang quản lý danh mục
-                    </Typography>
+                            height: '30px'
+                        }}
+                        onClick={() => setOpen(true)}
+                    >
+                        Thêm
+                    </Button>
                 </Box>
 
                 <Divider sx={{ margin: '16px 0' }} />
@@ -93,7 +135,7 @@ function ManageCategory() {
                         }}>
                             <TableRow>
                                 <TableCell align='center' sx={{ fontSize: '1.5rem', color: '#fff' }}>STT</TableCell>
-                                <TableCell align='center' sx={{ fontSize: '1.5rem', color: '#fff' }}>Ảnh</TableCell>
+                                {/* <TableCell align='center' sx={{ fontSize: '1.5rem', color: '#fff' }}>Ảnh</TableCell> */}
                                 <TableCell align='center' sx={{ fontSize: '1.5rem', color: '#fff' }}>Tên danh mục</TableCell>
                                 <TableCell align='center' sx={{ fontSize: '1.5rem', color: '#fff' }}>Hành động</TableCell>
                             </TableRow>
@@ -104,9 +146,9 @@ function ManageCategory() {
                                     return (
                                         <TableRow>
                                             <TableCell align='center' sx={{ fontSize: '1.4rem' }}>{index + 1}</TableCell>
-                                            <TableCell align='center' sx={{ fontSize: '1.4rem' }}>
+                                            {/* <TableCell align='center' sx={{ fontSize: '1.4rem' }}>
                                                 <Avatar />
-                                            </TableCell>
+                                            </TableCell> */}
                                             <TableCell align='center' sx={{ fontSize: '1.4rem' }}>{category.name}</TableCell>
                                             <TableCell align='center' sx={{ fontSize: '1.4rem' }}>
                                                 <Box>
@@ -117,7 +159,7 @@ function ManageCategory() {
                                                             textTransform: 'none',
                                                             fontSize: '1.2rem'
                                                         }}
-                                                        onClick={handleOpen}
+                                                        onClick={() => handleOpenUpdateCategory(category)}
                                                     >
                                                         Chỉnh sửa
                                                     </Button>
@@ -147,11 +189,12 @@ function ManageCategory() {
                                 marginBottom: '12px'
                             }}
                         >
-                            Chỉnh sửa thông tin người dùng
+                            Danh mục
                         </Typography>
                         <Divider />
                         <Grid container spacing={2} sx={{ marginTop: '20px' }}>
-                            <Grid item md={8}>
+                            <Grid item md={12}>
+
                                 <Box sx={{
                                     marginBottom: '20px'
                                 }}>
@@ -160,19 +203,20 @@ function ManageCategory() {
                                         alignItems: 'center'
                                     }}>
                                         <Box component='label' sx={{
-                                            width: '110px',
+                                            width: '140px',
                                             textAlign: 'right',
                                             padding: '0 12px',
                                             fontSize: '1.5rem',
                                             color: '#545866'
                                         }}>
-                                            Tên đăng nhập
+                                            Tên danh mục
                                         </Box>
                                         <InputBase
                                             required
                                             id="outlined-basic"
-                                            placeholder='Tên đăng nhập'
+                                            placeholder='Nhập danh mục'
                                             variant='outlined'
+                                            onChange={(e) => setCategoryToAdd({ ...categoryToAdd, name: e.target.value })}
                                             sx={{
                                                 flex: 1,
                                                 borderRadius: '2px',
@@ -180,6 +224,7 @@ function ManageCategory() {
                                                 padding: '4px 8px',
                                                 fontSize: '1.4rem'
                                             }}
+                                            value={categoryToAdd?.name}
                                         />
                                     </Box>
                                 </Box>
@@ -191,100 +236,7 @@ function ManageCategory() {
                                         alignItems: 'center'
                                     }}>
                                         <Box component='label' sx={{
-                                            width: '110px',
-                                            textAlign: 'right',
-                                            padding: '0 12px',
-                                            fontSize: '1.5rem',
-                                            color: '#545866'
-                                        }}>
-                                            Tên
-                                        </Box>
-                                        <InputBase
-                                            required
-                                            id="outlined-basic"
-                                            placeholder='Nguyễn Văn Đương'
-                                            variant='outlined'
-                                            sx={{
-                                                flex: 1,
-                                                borderRadius: '2px',
-                                                border: '1px solid rgba(0, 0, 0, 0.3)',
-                                                padding: '4px 8px',
-                                                fontSize: '1.4rem'
-                                            }}
-                                        />
-                                    </Box>
-                                </Box>
-                                <Box sx={{
-                                    marginBottom: '20px'
-                                }}>
-                                    <Box sx={{
-                                        display: 'flex',
-                                        alignItems: 'center'
-                                    }}>
-                                        <Box component='label' sx={{
-                                            width: '110px',
-                                            textAlign: 'right',
-                                            padding: '0 12px',
-                                            fontSize: '1.5rem',
-                                            color: '#545866'
-                                        }}>
-                                            Email
-                                        </Box>
-                                        <InputBase
-                                            required
-                                            id="outlined-basic"
-                                            placeholder='duong.nv194260@sis.hust.edu.vn'
-                                            variant='outlined'
-                                            sx={{
-                                                flex: 1,
-                                                borderRadius: '2px',
-                                                border: '1px solid rgba(0, 0, 0, 0.3)',
-                                                padding: '4px 8px',
-                                                fontSize: '1.4rem'
-                                            }}
-                                        />
-                                    </Box>
-                                </Box>
-                                <Box sx={{
-                                    marginBottom: '20px'
-                                }}>
-                                    <Box sx={{
-                                        display: 'flex',
-                                        alignItems: 'center'
-                                    }}>
-                                        <Box component='label' sx={{
-                                            width: '110px',
-                                            textAlign: 'right',
-                                            padding: '0 12px',
-                                            fontSize: '1.5rem',
-                                            color: '#545866'
-                                        }}>
-                                            Số điện thoại
-                                        </Box>
-                                        <InputBase
-                                            required
-                                            id="outlined-basic"
-                                            placeholder='0522081512'
-                                            variant='outlined'
-                                            sx={{
-                                                flex: 1,
-                                                borderRadius: '2px',
-                                                border: '1px solid rgba(0, 0, 0, 0.3)',
-                                                padding: '4px 8px',
-                                                fontSize: '1.4rem'
-                                            }}
-                                        />
-                                    </Box>
-                                </Box>
-                                <Box sx={{
-                                    marginBottom: '20px'
-                                }}>
-                                    <Box sx={{
-                                        display: 'flex',
-                                        alignItems: 'center'
-                                    }}>
-                                        <Box component='label' sx={{
-                                            width: '110px',
+                                            width: '140px',
                                             textAlign: 'right',
                                             padding: '0 12px',
                                             fontSize: '1.5rem',
@@ -299,40 +251,12 @@ function ManageCategory() {
                                                 color: '#fff',
                                                 flex: '1',
                                                 fontSize: '1.3rem'
-                                            }}>
-                                            Lưu thay đổi
+                                            }}
+                                            onClick={handleAddCategory}
+                                        >
+                                            Lưu
                                         </Button>
                                     </Box>
-                                </Box>
-                            </Grid>
-                            <Grid item md={4}>
-                                <Box sx={{
-                                    display: 'flex',
-                                    flexDirection: 'column',
-                                    alignItems: 'center',
-                                    justifyContent: 'center'
-                                }}>
-                                    <Avatar sx={{ width: '120px', height: '120px' }} />
-                                    <Button
-                                        component='label'
-                                        variant="outlined"
-                                        sx={{
-                                            textTransform: 'none',
-                                            color: 'rgba(0, 0, 0, 0.6)',
-                                            border: '1px solid rgba(0, 0, 0, 0.6)',
-                                            borderRadius: '2px',
-                                            marginTop: '20px',
-                                            fontSize: '1.4rem',
-                                            '&:hover': {
-                                                color: 'rgba(0,  0, 0, 0.5)',
-                                                border: '1px solid rgba(0, 0, 0, 0.5)'
-                                            }
-                                        }}
-                                        startIcon={<CameraAlt />}
-                                    >
-                                        Chọn ảnh
-                                        <input type="file" hidden />
-                                    </Button>
                                 </Box>
                             </Grid>
                         </Grid>

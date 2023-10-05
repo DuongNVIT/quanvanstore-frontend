@@ -1,7 +1,33 @@
 import { Box, Button, Divider, Grid, InputBase, Typography } from '@mui/material'
-import React from 'react'
+import React, { useState } from 'react'
+import authService from '../../services/authService';
+import { useDispatch } from 'react-redux';
+import { updateAlertModal } from '../../store/actions/alert';
 
 function ChangePassword() {
+
+    const [oldPass, setOldPass] = useState("");
+    const [newPass, setNewPass] = useState("");
+    const [verifyPass, setVerifyPass] = useState("");
+    const [error, setError] = useState(false);
+
+    const dispatch = useDispatch();
+
+    const handleChangePass = async () => {
+        try {
+            const res = await authService.changePass(oldPass, newPass, verifyPass);
+            dispatch(updateAlertModal({
+                isOpen: true,
+                message: "Cập nhật mật khẩu thành công!"
+            }))
+            setError(false);
+        } catch (error) {
+            console.log(error);
+            setError(true);
+        }
+    }
+
+
     return (
         <Box sx={{
             padding: '16px',
@@ -25,7 +51,7 @@ function ChangePassword() {
                             alignItems: 'center'
                         }}>
                             <Box component='label' sx={{
-                                width: '150px',
+                                width: '190px',
                                 textAlign: 'right',
                                 padding: '0 12px',
                                 fontSize: '1.5rem',
@@ -45,6 +71,9 @@ function ChangePassword() {
                                     padding: '4px 8px',
                                     fontSize: '1.4rem'
                                 }}
+                                type="password"
+                                value={oldPass}
+                                onChange={(e) => setOldPass(e.target.value)}
                             />
                         </Box>
                     </Box>
@@ -56,7 +85,7 @@ function ChangePassword() {
                             alignItems: 'center'
                         }}>
                             <Box component='label' sx={{
-                                width: '150px',
+                                width: '190px',
                                 textAlign: 'right',
                                 padding: '0 12px',
                                 fontSize: '1.5rem',
@@ -68,6 +97,7 @@ function ChangePassword() {
                                 required
                                 id="outlined-basic"
                                 placeholder='Nhập mật khẩu mới'
+                                type="password"
                                 variant='outlined'
                                 sx={{
                                     flex: 1,
@@ -76,6 +106,8 @@ function ChangePassword() {
                                     padding: '4px 8px',
                                     fontSize: '1.4rem'
                                 }}
+                                value={newPass}
+                                onChange={(e) => setNewPass(e.target.value)}
                             />
                         </Box>
                     </Box>
@@ -87,7 +119,7 @@ function ChangePassword() {
                             alignItems: 'center'
                         }}>
                             <Box component='label' sx={{
-                                width: '150px',
+                                width: '190px',
                                 textAlign: 'right',
                                 padding: '0 12px',
                                 fontSize: '1.5rem',
@@ -99,6 +131,7 @@ function ChangePassword() {
                                 required
                                 id="outlined-basic"
                                 placeholder='Nhập lại mật khẩu mới'
+                                type="password"
                                 variant='outlined'
                                 sx={{
                                     flex: 1,
@@ -107,9 +140,44 @@ function ChangePassword() {
                                     padding: '4px 8px',
                                     fontSize: '1.4rem'
                                 }}
+                                value={verifyPass}
+                                onChange={(e) => setVerifyPass(e.target.value)}
                             />
                         </Box>
                     </Box>
+
+                    {
+                        error &&
+                        <Box sx={{
+                            marginBottom: '20px'
+                        }}>
+                            <Box sx={{
+                                display: 'flex',
+                                alignItems: 'center'
+                            }}>
+                                <Box component='label' sx={{
+                                    width: '190px',
+                                    textAlign: 'right',
+                                    padding: '0 12px',
+                                    fontSize: '1.5rem',
+                                    color: '#545866'
+                                }}>
+
+                                </Box>
+                                <Typography
+                                    sx={{
+                                        borderRadius: '2px',
+                                        color: 'red',
+                                        flex: '1',
+                                        fontSize: '1.4rem'
+                                    }}
+                                    onClick={handleChangePass}
+                                >
+                                    Mật khẩu cũ hoặc xác nhận mật khẩu không trùng khớp
+                                </Typography>
+                            </Box>
+                        </Box>
+                    }
 
                     <Box sx={{
                         marginBottom: '20px'
@@ -119,7 +187,7 @@ function ChangePassword() {
                             alignItems: 'center'
                         }}>
                             <Box component='label' sx={{
-                                width: '150px',
+                                width: '190px',
                                 textAlign: 'right',
                                 padding: '0 12px',
                                 fontSize: '1.5rem',
@@ -134,7 +202,9 @@ function ChangePassword() {
                                     color: '#fff',
                                     flex: '1',
                                     fontSize: '1.3rem'
-                                }}>
+                                }}
+                                onClick={handleChangePass}
+                            >
                                 Lưu thay đổi
                             </Button>
                         </Box>

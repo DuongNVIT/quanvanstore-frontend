@@ -1,9 +1,11 @@
 import { CameraAlt, ModeEditOutline } from '@mui/icons-material'
-import { Avatar, Box, Button, Divider, Grid, InputBase, Modal, Switch, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material'
+import { Avatar, Box, Button, Divider, FormControl, Grid, InputBase, InputLabel, MenuItem, Modal, Select, Switch, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material'
 import React from 'react'
 import { useState } from 'react';
 import billService from './../../services/billService'
 import { useEffect } from 'react';
+import { updateAlertModal } from '../../store/actions/alert';
+import { useDispatch } from 'react-redux';
 
 
 const style = {
@@ -21,6 +23,7 @@ function ManageUser() {
 
     const [open, setOpen] = useState(false);
     const [orderList, setOrderList] = useState([]);
+    const dispatch = useDispatch();
 
     const handleGetOrderList = async () => {
         try {
@@ -42,6 +45,21 @@ function ManageUser() {
 
     const handleOpen = () => {
         setOpen(true);
+    }
+
+    const handleChangeStatus = async (orderItem, event) => {
+        try {
+            const res = await billService.updateStatus(orderItem, event.target.value);
+            console.log(res);
+            dispatch(updateAlertModal({
+                isOpen: true,
+                message: "Cập nhật trạng thái đơn hàng thành công!"
+            }))
+            handleGetOrderList();
+            
+        } catch (error) {
+            console.log(error);
+        }
     }
     return (
         <Box sx={{
@@ -101,7 +119,7 @@ function ManageUser() {
                                 <TableCell align='center' sx={{ fontSize: '1.5rem', color: '#fff' }}>Số lượng</TableCell>
                                 <TableCell align='center' sx={{ fontSize: '1.5rem', color: '#fff' }}>Thành tiền</TableCell>
                                 <TableCell align='center' sx={{ fontSize: '1.5rem', color: '#fff' }}>Người đặt</TableCell>
-                                <TableCell align='center' sx={{ fontSize: '1.5rem', color: '#fff', minWidth: '150px' }}>Hành động</TableCell>
+                                <TableCell align='center' sx={{ fontSize: '1.5rem', color: '#fff', minWidth: '200px' }}>Hành động</TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
@@ -111,7 +129,7 @@ function ManageUser() {
                                         <TableRow>
                                             <TableCell align='center' sx={{ fontSize: '1.4rem' }}>{index + 1}</TableCell>
                                             <TableCell align='center' sx={{ fontSize: '1.4rem' }}>
-                                                <Avatar src={orderItem.product.thumail}/>
+                                                <Avatar src={orderItem.product.thumail} />
                                             </TableCell>
                                             <TableCell align='center' sx={{ fontSize: '1.4rem' }}>{orderItem.product.name}</TableCell>
                                             <TableCell align='center' sx={{ fontSize: '1.4rem' }}>{orderItem.product.newPrice}</TableCell>
@@ -119,19 +137,23 @@ function ManageUser() {
                                             <TableCell align='center' sx={{ fontSize: '1.4rem' }}>{orderItem.product.newPrice * orderItem.quantity}</TableCell>
                                             <TableCell align='center' sx={{ fontSize: '1.4rem' }}>{orderItem.user.fullname}</TableCell>
                                             <TableCell align='center' sx={{ fontSize: '1.4rem' }}>
-                                                <Box>
-                                                    <Button
-                                                        startIcon={<ModeEditOutline />}
-                                                        variant='contained'
+                                                <FormControl fullWidth>
+                                                    {/* <InputLabel id="demo-simple-select-label">Age</InputLabel> */}
+                                                    <Select
+                                                        // labelId="demo-simple-select-label"
+                                                        id="demo-simple-select"
+                                                        value={orderItem.status}
+                                                        // label="Age"
+                                                        onChange={(event) => handleChangeStatus(orderItem, event)}
                                                         sx={{
-                                                            textTransform: 'none',
-                                                            fontSize: '1.2rem'
+                                                            fontSize: '1.4rem'
                                                         }}
-                                                        onClick={handleOpen}
                                                     >
-                                                        Chỉnh sửa
-                                                    </Button>
-                                                </Box>
+                                                        <MenuItem value={1}>Chờ xác nhận</MenuItem>
+                                                        <MenuItem value={2}>Đang giao</MenuItem>
+                                                        <MenuItem value={3}>Hoàn thành</MenuItem>
+                                                    </Select>
+                                                </FormControl>
 
                                             </TableCell>
                                         </TableRow>
@@ -142,212 +164,6 @@ function ManageUser() {
                         </TableBody>
                     </Table>
                 </TableContainer>
-                <Modal
-                    open={open}
-                    onClose={handleClose}
-                    aria-labelledby="modal-modal-title"
-                    aria-describedby="modal-modal-description"
-                >
-                    <Box sx={style}>
-                        <Typography
-                            variant="h2"
-                            sx={{
-                                fontSize: '1.8rem',
-                                fontWeight: '500',
-                                marginBottom: '12px'
-                            }}
-                        >
-                            Chỉnh sửa thông tin người dùng
-                        </Typography>
-                        <Divider />
-                        <Grid container spacing={2} sx={{ marginTop: '20px' }}>
-                            <Grid item md={8}>
-                                <Box sx={{
-                                    marginBottom: '20px'
-                                }}>
-                                    <Box sx={{
-                                        display: 'flex',
-                                        alignItems: 'center'
-                                    }}>
-                                        <Box component='label' sx={{
-                                            width: '110px',
-                                            textAlign: 'right',
-                                            padding: '0 12px',
-                                            fontSize: '1.5rem',
-                                            color: '#545866'
-                                        }}>
-                                            Tên đăng nhập
-                                        </Box>
-                                        <InputBase
-                                            required
-                                            id="outlined-basic"
-                                            placeholder='Tên đăng nhập'
-                                            variant='outlined'
-                                            sx={{
-                                                flex: 1,
-                                                borderRadius: '2px',
-                                                border: '1px solid rgba(0, 0, 0, 0.3)',
-                                                padding: '4px 8px',
-                                                fontSize: '1.4rem'
-                                            }}
-                                        />
-                                    </Box>
-                                </Box>
-                                <Box sx={{
-                                    marginBottom: '20px'
-                                }}>
-                                    <Box sx={{
-                                        display: 'flex',
-                                        alignItems: 'center'
-                                    }}>
-                                        <Box component='label' sx={{
-                                            width: '110px',
-                                            textAlign: 'right',
-                                            padding: '0 12px',
-                                            fontSize: '1.5rem',
-                                            color: '#545866'
-                                        }}>
-                                            Tên
-                                        </Box>
-                                        <InputBase
-                                            required
-                                            id="outlined-basic"
-                                            placeholder='Nguyễn Văn Đương'
-                                            variant='outlined'
-                                            sx={{
-                                                flex: 1,
-                                                borderRadius: '2px',
-                                                border: '1px solid rgba(0, 0, 0, 0.3)',
-                                                padding: '4px 8px',
-                                                fontSize: '1.4rem'
-                                            }}
-                                        />
-                                    </Box>
-                                </Box>
-                                <Box sx={{
-                                    marginBottom: '20px'
-                                }}>
-                                    <Box sx={{
-                                        display: 'flex',
-                                        alignItems: 'center'
-                                    }}>
-                                        <Box component='label' sx={{
-                                            width: '110px',
-                                            textAlign: 'right',
-                                            padding: '0 12px',
-                                            fontSize: '1.5rem',
-                                            color: '#545866'
-                                        }}>
-                                            Email
-                                        </Box>
-                                        <InputBase
-                                            required
-                                            id="outlined-basic"
-                                            placeholder='duong.nv194260@sis.hust.edu.vn'
-                                            variant='outlined'
-                                            sx={{
-                                                flex: 1,
-                                                borderRadius: '2px',
-                                                border: '1px solid rgba(0, 0, 0, 0.3)',
-                                                padding: '4px 8px',
-                                                fontSize: '1.4rem'
-                                            }}
-                                        />
-                                    </Box>
-                                </Box>
-                                <Box sx={{
-                                    marginBottom: '20px'
-                                }}>
-                                    <Box sx={{
-                                        display: 'flex',
-                                        alignItems: 'center'
-                                    }}>
-                                        <Box component='label' sx={{
-                                            width: '110px',
-                                            textAlign: 'right',
-                                            padding: '0 12px',
-                                            fontSize: '1.5rem',
-                                            color: '#545866'
-                                        }}>
-                                            Số điện thoại
-                                        </Box>
-                                        <InputBase
-                                            required
-                                            id="outlined-basic"
-                                            placeholder='0522081512'
-                                            variant='outlined'
-                                            sx={{
-                                                flex: 1,
-                                                borderRadius: '2px',
-                                                border: '1px solid rgba(0, 0, 0, 0.3)',
-                                                padding: '4px 8px',
-                                                fontSize: '1.4rem'
-                                            }}
-                                        />
-                                    </Box>
-                                </Box>
-                                <Box sx={{
-                                    marginBottom: '20px'
-                                }}>
-                                    <Box sx={{
-                                        display: 'flex',
-                                        alignItems: 'center'
-                                    }}>
-                                        <Box component='label' sx={{
-                                            width: '110px',
-                                            textAlign: 'right',
-                                            padding: '0 12px',
-                                            fontSize: '1.5rem',
-                                            color: '#545866'
-                                        }}>
-
-                                        </Box>
-                                        <Button
-                                            variant='contained'
-                                            sx={{
-                                                borderRadius: '2px',
-                                                color: '#fff',
-                                                flex: '1',
-                                                fontSize: '1.3rem'
-                                            }}>
-                                            Lưu thay đổi
-                                        </Button>
-                                    </Box>
-                                </Box>
-                            </Grid>
-                            <Grid item md={4}>
-                                <Box sx={{
-                                    display: 'flex',
-                                    flexDirection: 'column',
-                                    alignItems: 'center',
-                                    justifyContent: 'center'
-                                }}>
-                                    <Avatar sx={{ width: '120px', height: '120px' }} />
-                                    <Button
-                                        component='label'
-                                        variant="outlined"
-                                        sx={{
-                                            textTransform: 'none',
-                                            color: 'rgba(0, 0, 0, 0.6)',
-                                            border: '1px solid rgba(0, 0, 0, 0.6)',
-                                            borderRadius: '2px',
-                                            marginTop: '20px',
-                                            fontSize: '1.4rem',
-                                            '&:hover': {
-                                                color: 'rgba(0,  0, 0, 0.5)',
-                                                border: '1px solid rgba(0, 0, 0, 0.5)'
-                                            }
-                                        }}
-                                        startIcon={<CameraAlt />}
-                                    >
-                                        Chọn ảnh
-                                        <input type="file" hidden />
-                                    </Button>
-                                </Box>
-                            </Grid>
-                        </Grid>
-                    </Box>
-                </Modal>
             </Box>
         </Box>
     )

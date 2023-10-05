@@ -10,10 +10,70 @@ import NewsItem from '../components/NewsItem/NewsItem'
 import productService from '../services/productService'
 import { useState } from 'react'
 import { useEffect } from 'react'
+import newsService from '../services/newsService'
+import { Link, useLocation } from 'react-router-dom'
+import bannerService from '../services/bannerService'
+import imagesService from '../services/imagesService'
+
+const dayConvert = ["Chủ nhật", "Thứ 2", "Thứ 3", "Thứ 4", "Thứ 5", "Thứ 6", "Thứ 7"];
 
 function HomePage() {
 
     const [products, setProducts] = useState([]);
+    const [news, setNews] = useState([]);
+    const [currentBanner, setCurrentBanner] = useState({});
+    const [images, setImages] = useState([]);
+
+    const handleGetImages = async () => {
+        try {
+            const res = await imagesService.getAll();
+            setImages(res.data.data);
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    useEffect(() => {
+        handleGetImages();
+    }, [])
+
+    const handleGetCurrentBanner = async () => {
+        try {
+            const res = await bannerService.getBanner();
+            setCurrentBanner(res.data.data);
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    const { pathname, hash, key } = useLocation();
+
+    useEffect(() => {
+        // if not a hash link, scroll to top
+        if (hash === '') {
+            window.scrollTo(0, 0);
+        }
+        // else scroll to id
+        else {
+            setTimeout(() => {
+                const id = hash.replace('#', '');
+                const element = document.getElementById(id);
+                if (element) {
+                    element.scrollIntoView();
+                }
+            }, 0);
+        }
+    }, [pathname, hash, key]); // do this on route change
+
+    const handleGetNews = async () => {
+        try {
+            const res = await newsService.getAll();
+            console.log(res)
+            setNews(res.data.data)
+        } catch (error) {
+            console.log(error)
+        }
+    }
 
     const handleGetProducts = async () => {
         try {
@@ -29,13 +89,20 @@ function HomePage() {
         handleGetProducts();
     }, [])
 
+    useEffect(() => {
+        handleGetNews();
+    }, [])
+
+    useEffect(() => {
+        handleGetCurrentBanner();
+    }, [])
     return (
         <Box>
             <Header />
             <Container>
-                <Banner />
+                <Banner banner={currentBanner} />
             </Container>
-            <Container sx={{ padding: '20px 0' }}>
+            {/* <Container sx={{ padding: '20px 0' }}>
                 <Box sx={{ backgroundColor: '#fff', padding: '20px' }}>
                     <Box>
                         <Typography variant="h3" sx={{ color: '#172578', position: 'relative' }}>
@@ -83,7 +150,7 @@ function HomePage() {
                         </Grid>
                     </Box>
                 </Box>
-            </Container>
+            </Container> */}
 
 
             {/* Những lý do nên chọn cửa hàng */}
@@ -138,7 +205,7 @@ function HomePage() {
                 <Box sx={{ background: 'linear-gradient(to right, #2864AB, #5BB571)', padding: '20px' }}>
                     <Box>
                         <Typography variant="h3" sx={{ color: '#fff', position: 'relative' }}>
-                            Sảm Phẩm Bán Chạy
+                            Sản Phẩm Bán Chạy
                             <span style={{
                                 position: 'absolute',
                                 height: '4px',
@@ -155,7 +222,7 @@ function HomePage() {
                         }}>
                             <Typography sx={{ color: '#D4F3FF', fontSize: '1.4rem' }}>
                                 Các sản phẩm được ưa chuộng nhất tại cửa hàng.</Typography>
-                            <Button
+                            {/* <Button
                                 variant='outlined'
                                 sx={{
                                     borderRadius: '2px',
@@ -167,7 +234,7 @@ function HomePage() {
                                     borderColor: '#fff'
                                 }}>
                                 Xem thêm
-                            </Button>
+                            </Button> */}
                         </Box>
                     </Box>
                     <Box>
@@ -175,7 +242,7 @@ function HomePage() {
                             {
                                 products.slice(0, 5).map((item, index) => {
                                     return <Grid item xs={2.4} key={index}>
-                                        <ProductItem product={item}/>
+                                        <ProductItem product={item} />
                                     </Grid>
                                 })
                             }
@@ -186,10 +253,10 @@ function HomePage() {
 
             <Container sx={{ padding: '20px 0' }}>
                 <Box sx={{ backgroundColor: '#fff', padding: '20px' }}>
-                    <Box sx={{display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                         <Typography variant="h3" sx={{ color: '#172578', position: 'relative' }}>
                             Thư viện ảnh về cửa hàng
-                            
+
                             <span style={{
                                 position: 'absolute',
                                 height: '4px',
@@ -200,115 +267,53 @@ function HomePage() {
                             }}></span>
                         </Typography>
                         <Box sx={{
-                                display: 'flex',
-                                justifyContent: 'space-between',
-                                margin: '24px 0 20px'
-                            }}>
-                                <Button
-                                    variant='outlined'
-                                    sx={{
-                                        borderRadius: '2px',
-                                        '&:hover': {
-                                            background: 'linear-gradient(to right, #1A4DB5, #0292CB)',
-                                            color: '#fff'
-                                        }
-                                    }}>
-                                    Xem thêm
-                                </Button>
-                            </Box>
-                    </Box>
-                    <Divider sx={{marginTop: '8px'}}/>
-                    <Box sx={{paddingTop: '20px'}}>
-                        <Grid container spacing={2}>
-                            <Grid item xs={3}>
-                                <img style={{ 
-                                    width: '100%', 
-                                    height: '250px',
-                                    '&hover': {
-                                        cursor: 'pointer',
-                                        transform: 'translateY(-1px)',
-                                        border: '1px solid rgba(0, 0, 0, 0.1)'
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            margin: '24px 0 20px'
+                        }}>
+                            <Button
+                                variant='outlined'
+                                sx={{
+                                    borderRadius: '2px',
+                                    '&:hover': {
+                                        background: 'linear-gradient(to right, #1A4DB5, #0292CB)',
+                                        color: '#fff'
                                     }
-                                }} 
-                                    src="http://diennuocthuytrang.com/uploads/source//z3323016147978-143f5c3150a10db065554a126ddce267.jpg" alt="" />
-                            </Grid>
-                            <Grid item xs={3}>
-                                <img style={{ 
-                                    width: '100%', 
-                                    height: '250px',
-                                    '&:hover': {
-                                        transform: 'scale(1.1)'
-                                    } 
-                                }} 
-                                    src="http://diennuocthuytrang.com/uploads/source//z3323016212651-733958aa7323810b18afa4d8d229d6a7.jpg" alt="" />
-                            </Grid>
-                            <Grid item xs={3}>
-                                <img style={{ 
-                                    width: '100%', 
-                                    height: '250px',
-                                    '&:hover': {
-                                        transform: 'scale(1.1)'
-                                    } 
-                                }} 
-                                    src="http://diennuocthuytrang.com/uploads/source//z3323016283540-34e8905d4ba395e8d35059b34fe517c3.jpg" alt="" />
-                            </Grid>
-                            <Grid item xs={3}>
-                                <img style={{ 
-                                    width: '100%', 
-                                    height: '250px',
-                                    '&:hover': {
-                                        transform: 'scale(1.1)'
-                                    } 
-                                }} 
-                                    src="http://diennuocthuytrang.com/uploads/source//z3323016065106-d902851efcc6ddfb665f04ff91d59686.jpg" alt="" />
-                            </Grid>
-                            <Grid item xs={3}>
-                                <img style={{ 
-                                    width: '100%', 
-                                    height: '250px',
-                                    '&:hover': {
-                                        transform: 'scale(1.1)'
-                                    } 
-                                }} 
-                                    src="http://diennuocthuytrang.com/uploads/source//z3323016147978-143f5c3150a10db065554a126ddce267.jpg" alt="" />
-                            </Grid>
-                            <Grid item xs={3}>
-                                <img style={{ 
-                                    width: '100%', 
-                                    height: '250px',
-                                    '&:hover': {
-                                        transform: 'scale(1.1)'
-                                    } 
-                                }} 
-                                    src="http://diennuocthuytrang.com/uploads/source//z3323016212651-733958aa7323810b18afa4d8d229d6a7.jpg" alt="" />
-                            </Grid>
-                            <Grid item xs={3}>
-                                <img style={{ 
-                                    width: '100%', 
-                                    height: '250px',
-                                    '&:hover': {
-                                        transform: 'scale(1.1)'
-                                    } 
-                                }} 
-                                    src="http://diennuocthuytrang.com/uploads/source//z3323016283540-34e8905d4ba395e8d35059b34fe517c3.jpg" alt="" />
-                            </Grid>
-                            <Grid item xs={3}>
-                                <img style={{ 
-                                    width: '100%', 
-                                    height: '250px',
-                                    '&:hover': {
-                                        transform: 'scale(1.1)'
-                                    } 
-                                }} 
-                                    src="http://diennuocthuytrang.com/uploads/source//z3323016065106-d902851efcc6ddfb665f04ff91d59686.jpg" alt="" />
-                            </Grid>
+                                }}>
+                                Xem thêm
+                            </Button>
+                        </Box>
+                    </Box>
+                    <Divider sx={{ marginTop: '8px' }} />
+                    <Box sx={{ paddingTop: '20px' }}>
+                        <Grid container spacing={2}>
+                            {
+                                images.map((image, index) => {
+                                    return (
+                                        <Grid item xs={3}>
+                                            <img style={{
+                                                width: '100%',
+                                                height: '250px',
+                                                '&hover': {
+                                                    cursor: 'pointer',
+                                                    transform: 'translateY(-1px)',
+                                                    border: '1px solid rgba(0, 0, 0, 0.1)'
+                                                }
+                                            }}
+                                                src={image?.url}
+                                            />
+                                        </Grid>
+                                    )
+                                })
+                            }
+
                         </Grid>
                     </Box>
                 </Box>
             </Container>
 
             {/* Tin tức */}
-            <Container sx={{ padding: '20px 0' }}>
+            <Container id="newsSection" sx={{ padding: '20px 0' }}>
                 <Box sx={{ background: 'linear-gradient(to right, #2864AB, #5BB571)', padding: '20px' }}>
                     <Box>
                         <Typography variant="h3" sx={{ color: '#fff', position: 'relative' }}>
@@ -347,41 +352,43 @@ function HomePage() {
                     <Box>
                         <Grid container spacing={0}>
                             <Grid item md={6}>
-                                <Card sx={{ marginRight: '20px', height: '100%' }}>
-                                    <CardMedia
-                                        sx={{ height: 320 }}
-                                        image="https://static.rangdongstore.vn/221107009937/2022/11/07/WEB%20CHINH_DANG%20KY%20NGAY_CS1.png?fm=webp&w=500"
-                                        title="green iguana"
-                                    />
-                                    <CardContent sx={{ padding: '12px 12px 4px' }}>
-                                        <Typography variant="h5" component="div" sx={{ fontSize: '2.6rem', fontWeight: 'bold' }}>
-                                            Chương trình Khuyến mãi đăng ký tài khoản mới - "Đăng ký ngay - Quà liền tay"
-                                        </Typography>
-                                        <Typography sx={{ fontSize: '1.6rem', color: '#9098B0', margin: '12px 0' }}>Thứ ba 25/04/2023</Typography>
-                                        <Typography sx={{ fontSize: '1.6rem', color: '#545866', margin: '8px 0' }}>Chương trình đăng ký tài khoản mới để sử dụng mã mua hàng trị giá 100.000đ trên website cửa hàng</Typography>
-                                    </CardContent>
-                                    <CardActions sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                                        <Button sx={{ fontSize: '1.3rem' }}>
-                                            Xem thêm
-                                            <ArrowRight />
-                                        </Button>
-                                    </CardActions>
+                                <Link to={`/news/${news[0]?.id}`}>
+                                    <Card sx={{ marginRight: '20px', height: '100%' }}>
+                                        <CardMedia
+                                            sx={{ height: 320 }}
+                                            image="https://static.rangdongstore.vn/221107009937/2022/11/07/WEB%20CHINH_DANG%20KY%20NGAY_CS1.png?fm=webp&w=500"
+                                            title="green iguana"
+                                        />
+                                        <CardContent sx={{ padding: '12px 12px 4px' }}>
+                                            <Typography variant="h5" component="div" sx={{ fontSize: '2.6rem', fontWeight: 'bold' }}>
+                                                {news[0]?.title}
+                                            </Typography>
+                                            {/* <Typography sx={{ fontSize: '1.6rem', color: '#9098B0', margin: '12px 0' }}>Thứ ba 25/04/2023</Typography> */}
+                                            <Typography sx={{ fontSize: '1.6rem', color: '#9098B0', margin: '12px 0' }}>
+                                                {dayConvert[new Date(news[0]?.createdDate).getDay()]}, ngày {new Date(news[0]?.createdDate).getDate()}/{new Date(news[0]?.createdDate).getMonth()}/{new Date(news[0]?.createdDate).getFullYear()}
+                                            </Typography>
+                                            <Typography sx={{ fontSize: '1.6rem', color: '#545866', margin: '8px 0' }}>{news[0]?.description}</Typography>
+                                        </CardContent>
+                                        <CardActions sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                                            <Button sx={{ fontSize: '1.3rem' }}>
+                                                Xem thêm
+                                                <ArrowRight />
+                                            </Button>
+                                        </CardActions>
 
-                                </Card>
+                                    </Card>
+                                </Link>
                             </Grid>
                             <Grid container xs={6} spacing={2}>
-                                <Grid item md={6}>
-                                    <NewsItem />
-                                </Grid>
-                                <Grid item md={6}>
-                                    <NewsItem />
-                                </Grid>
-                                <Grid item md={6}>
-                                    <NewsItem />
-                                </Grid>
-                                <Grid item md={6}>
-                                    <NewsItem />
-                                </Grid>
+                                {
+                                    news.slice(1, 5).map((item, index) => {
+                                        return (
+                                            <Grid item md={6}>
+                                                <NewsItem news={item} />
+                                            </Grid>
+                                        )
+                                    })
+                                }
 
                             </Grid>
                         </Grid>

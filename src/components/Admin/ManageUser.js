@@ -4,6 +4,8 @@ import React from 'react'
 import { useState } from 'react';
 import userService from '../../services/userService';
 import { useEffect } from 'react';
+import { updateAlertModal } from '../../store/actions/alert';
+import { useDispatch } from 'react-redux';
 
 const style = {
     position: 'absolute',
@@ -20,11 +22,30 @@ function ManageUser() {
 
     const [open, setOpen] = useState(false);
     const [userList, setUserList] = useState([]);
+    const [userToUpdate, setUserToUpdate] = useState({});
+
+
 
     const handleClose = () => {
         setOpen(false);
+        handleGetUserList();
     }
 
+    const dispatch = useDispatch();
+
+
+    const handleDeleteUser = async (userId) => {
+        try {
+            const res = await userService.deleteUser(userId);
+            dispatch(updateAlertModal({
+                isOpen: true,
+                message: "Cập nhật thành công!"
+            }))
+            handleGetUserList();
+        } catch (error) {
+            console.log(error);
+        }
+    }
     const handleGetUserList = async () => {
         try {
             const ans = await userService.getAll();
@@ -36,9 +57,23 @@ function ManageUser() {
 
     useEffect(() => { handleGetUserList() }, [])
 
+    const handleUpdateUser = async () => {
+        try {
+            const res = await userService.updateUser(userToUpdate);
+            dispatch(updateAlertModal({
+                isOpen: true,
+                message: "Cập nhật người dùng thành công!"
+            }))
+            handleClose();
+        } catch (error) {
+            console.log(error)
+        }
+    }
 
-    const handleOpen = () => {
-        setOpen(true);
+
+    const handleOpen = (userItem) => {
+        setOpen(prev => true);
+        setUserToUpdate(prev => userItem)
     }
     return (
         <Box sx={{
@@ -126,7 +161,9 @@ function ManageUser() {
                                                         }}>
                                                         Active
                                                     </Typography>
-                                                    <Switch />
+                                                    <Switch checked={!userItem.deleted}
+                                                        onChange={() => handleDeleteUser(userItem.id)}
+                                                    />
                                                 </Box>
                                             </TableCell>
                                             <TableCell align='center' sx={{ fontSize: '1.4rem' }}>
@@ -138,7 +175,7 @@ function ManageUser() {
                                                             textTransform: 'none',
                                                             fontSize: '1.2rem'
                                                         }}
-                                                        onClick={handleOpen}
+                                                        onClick={() => handleOpen(userItem)}
                                                     >
                                                         Chỉnh sửa
                                                     </Button>
@@ -181,13 +218,13 @@ function ManageUser() {
                                         alignItems: 'center'
                                     }}>
                                         <Box component='label' sx={{
-                                            width: '110px',
+                                            width: '140px',
                                             textAlign: 'right',
                                             padding: '0 12px',
                                             fontSize: '1.5rem',
                                             color: '#545866'
                                         }}>
-                                            Tên
+                                            Họ tên
                                         </Box>
                                         <InputBase
                                             required
@@ -201,6 +238,8 @@ function ManageUser() {
                                                 padding: '4px 8px',
                                                 fontSize: '1.4rem'
                                             }}
+                                            value={userToUpdate?.fullname}
+                                            onChange={(e) => setUserToUpdate({ ...userToUpdate, fullname: e.target.value })}
                                         />
                                     </Box>
                                 </Box>
@@ -212,7 +251,7 @@ function ManageUser() {
                                         alignItems: 'center'
                                     }}>
                                         <Box component='label' sx={{
-                                            width: '110px',
+                                            width: '140px',
                                             textAlign: 'right',
                                             padding: '0 12px',
                                             fontSize: '1.5rem',
@@ -232,6 +271,8 @@ function ManageUser() {
                                                 padding: '4px 8px',
                                                 fontSize: '1.4rem'
                                             }}
+                                            value={userToUpdate?.email}
+                                            onChange={(e) => setUserToUpdate({ ...userToUpdate, email: e.target.value })}
                                         />
                                     </Box>
                                 </Box>
@@ -243,7 +284,7 @@ function ManageUser() {
                                         alignItems: 'center'
                                     }}>
                                         <Box component='label' sx={{
-                                            width: '110px',
+                                            width: '140px',
                                             textAlign: 'right',
                                             padding: '0 12px',
                                             fontSize: '1.5rem',
@@ -263,6 +304,8 @@ function ManageUser() {
                                                 padding: '4px 8px',
                                                 fontSize: '1.4rem'
                                             }}
+                                            value={userToUpdate?.phone}
+                                            onChange={(e) => setUserToUpdate({ ...userToUpdate, phone: e.target.value })}
                                         />
                                     </Box>
                                 </Box>
@@ -274,7 +317,7 @@ function ManageUser() {
                                         alignItems: 'center'
                                     }}>
                                         <Box component='label' sx={{
-                                            width: '110px',
+                                            width: '140px',
                                             textAlign: 'right',
                                             padding: '0 12px',
                                             fontSize: '1.5rem',
@@ -289,7 +332,9 @@ function ManageUser() {
                                                 color: '#fff',
                                                 flex: '1',
                                                 fontSize: '1.3rem'
-                                            }}>
+                                            }}
+                                            onClick={handleUpdateUser}
+                                        >
                                             Lưu thay đổi
                                         </Button>
                                     </Box>
@@ -302,7 +347,9 @@ function ManageUser() {
                                     alignItems: 'center',
                                     justifyContent: 'center'
                                 }}>
-                                    <Avatar sx={{ width: '120px', height: '120px' }} />
+                                    <Avatar
+                                        sx={{ width: '120px', height: '120px' }}
+                                    />
                                     <Button
                                         component='label'
                                         variant="outlined"

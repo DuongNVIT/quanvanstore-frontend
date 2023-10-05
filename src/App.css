@@ -36,3 +36,20 @@
     transform: rotate(360deg);
   }
 } */
+.product-description img {
+  width: 100%;
+}
+
+.news_content p {
+  font-size: 1.6rem;
+}
+
+.news_content img {
+  width: 100%;
+  display: block;
+  
+}
+
+.general-infor p {
+  font-size: 1.6rem;
+}

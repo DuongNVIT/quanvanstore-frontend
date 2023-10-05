@@ -1,14 +1,8 @@
 import axiosClient from "./axiosClient";
 
-const productService = {
+const imagesService = {
     getAll: async () => {
-        const url = "/product/list-all";
-        const ans = await axiosClient.get(url);
-        return ans;
-    },
-    getProduct: async (productId) => {
-        const url = `/product/?productId=${productId}`;
-        console.log(url);
+        const url = "/images/list-all";
         const ans = await axiosClient.get(url);
         return ans;
     },
@@ -18,21 +12,27 @@ const productService = {
         const ans = await axiosClient.get(url);
         return ans;
     },
-    addProduct: async (product) => {
-        const url = '/admin/product/'
-        const ans = await axiosClient.post(url, product)
+    getAllForAdmin: async () => {
+        const url = "/admin/images/list-all";
+        const ans = await axiosClient.get(url);
         return ans;
     },
-    deleteProduct: async (productId) => {
-        const url = `/admin/product/?productId=${productId}`;
+    uploadImage: async (image) => {
+        const url = '/admin/images/'
+        const ans = await axiosClient.post(url, image)
+        return ans;
+    },
+    deleteImage: async (imageId) => {
+        const url = `/admin/images/${imageId}`;
         const ans = await axiosClient.delete(url);
         return ans;
     },
-    getReleventProduct: async (productId) => {
-        const url = `/product/relevant/?productId=${productId}`;
-        const ans = await axiosClient.get(url);
+    updateImage: async (imageId) => {
+        const url = `/admin/images/${imageId}`;
+        console.log(url);
+        const ans = await axiosClient.put(url);
         return ans;
-    }
+    },
 }
 
-export default productService;
+export default imagesService;

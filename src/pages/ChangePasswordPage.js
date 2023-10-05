@@ -120,7 +120,7 @@ function ChangePassWordPage() {
                                                 alignItems: 'center'
                                             }}>
                                                 <Box component='label' sx={{
-                                                    width: '150px',
+                                                    width: '190px',
                                                     textAlign: 'right',
                                                     padding: '0 12px',
                                                     fontSize: '1.5rem',
@@ -151,7 +151,7 @@ function ChangePassWordPage() {
                                                 alignItems: 'center'
                                             }}>
                                                 <Box component='label' sx={{
-                                                    width: '150px',
+                                                    width: '190px',
                                                     textAlign: 'right',
                                                     padding: '0 12px',
                                                     fontSize: '1.5rem',
@@ -183,7 +183,7 @@ function ChangePassWordPage() {
                                                 alignItems: 'center'
                                             }}>
                                                 <Box component='label' sx={{
-                                                    width: '150px',
+                                                    width: '190px',
                                                     textAlign: 'right',
                                                     padding: '0 12px',
                                                     fontSize: '1.5rem',

@@ -5,32 +5,47 @@ import { useEffect } from 'react';
 import { useState } from 'react';
 import productService from '../../services/productService';
 import categoryService from '../../services/categoryService';
+import uploadService from '../../services/uploadService';
 import { useDispatch } from 'react-redux';
 import { updateAlertModal } from '../../store/actions/alert';
+import Add from './Add';
+import EditorToolbar, { modules, formats } from "./EditorToolbar";
+import ReactQuill from 'react-quill';
 
 const style = {
     position: 'absolute',
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
-    width: '600px',
+    width: '800px',
+    height: '80vh',
+    overflow: 'auto',
     bgcolor: 'background.paper',
     borderRadius: '4px',
-    padding: '16px'
+    padding: '16px',
+
 };
 
-function ManageUser() {
+function ManageProduct() {
 
     const [open, setOpen] = useState(false);
     const [openAddProductModal, setOpenAddProductModal] = useState(false);
+    const [openUpdateModal, setOpenUpdateModal] = useState(false);
     const [productList, setProductList] = useState([]);
     const [categories, setCategories] = useState([]);
+    const [first, setFirst] = useState(true);
     const [productToAdd, setProductToAdd] = useState({
         name: '',
         oldPrice: '',
         newPrice: '',
-        categoryId: ''
+        categoryId: '',
+        description: '',
+        thumbnail: ''
     });
+
+
+
+    const [productToUpdate, setProductToUpdate] = useState({});
 
     const dispatch = useDispatch();
 
@@ -48,12 +63,41 @@ function ManageUser() {
         handleGetCategories()
     }, [])
 
+
     const handleClose = () => {
         setOpen(false);
     }
 
-    const handleOpen = () => {
-        setOpen(true);
+    useEffect(() => {
+        setFirst(false)
+    }, [])
+
+    const handleOpenUpdate = (productItem) => {
+        setProductToUpdate({...productItem})
+        
+    }
+
+    useEffect(() => {
+        console.log("Thay đổi product to add")
+        if(first == false) {
+            setOpenUpdateModal(true)
+        }
+    }, [productToUpdate])
+
+    const ondescription = (value) => {
+        console.log(value);
+        setProductToAdd({
+            ...productToAdd,
+            description: value
+        });
+    }
+
+    const ondescription2 = (value) => {
+        console.log(value);
+        setProductToUpdate({
+            ...productToUpdate,
+            description: value
+        });
     }
 
     const handleGetProductList = async () => {
@@ -76,9 +120,24 @@ function ManageUser() {
             console.log(ans);
             dispatch(updateAlertModal({
                 isOpen: true,
-                message: "Thêm sản phẩm thành công!"
+                message: "Thao tác thành công!"
             }))
-            setOpenAddProductModal(false)
+            setOpenAddProductModal(false);
+            handleGetProductList();
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    const handleUpdateProduct = async () => {
+        try {
+            const ans = await productService.addProduct(productToUpdate);
+            console.log(ans);
+            dispatch(updateAlertModal({
+                isOpen: true,
+                message: "Thao tác thành công!"
+            }))
+            setOpenUpdateModal(false);
             handleGetProductList();
         } catch (error) {
             console.log(error);
@@ -95,6 +154,24 @@ function ManageUser() {
             const newProductList = productList.filter(item => item.id != productId);
             setProductList(newProductList);
             console.log(ans);
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    const handleUploadImage = async (event) => {
+        try {
+            const file = event.target.files[0];
+            const res = await uploadService.uploadImage(file);
+            console.log(res);
+            setProductToAdd({
+                ...productToAdd,
+                thumbnail: res.secure_url
+            })
+            dispatch(updateAlertModal({
+                isOpen: true,
+                message: "Upload ảnh thành công!"
+            }))
         } catch (error) {
             console.log(error);
         }
@@ -198,7 +275,7 @@ function ManageUser() {
                                                             textTransform: 'none',
                                                             fontSize: '1.2rem'
                                                         }}
-                                                        onClick={handleOpen}
+                                                        onClick={() => handleOpenUpdate(productItem)}
                                                     >
                                                         Sửa
                                                     </Button>
@@ -230,212 +307,7 @@ function ManageUser() {
                         </TableBody>
                     </Table>
                 </TableContainer>
-                <Modal
-                    open={open}
-                    onClose={handleClose}
-                    aria-labelledby="modal-modal-title"
-                    aria-describedby="modal-modal-description"
-                >
-                    <Box sx={style}>
-                        <Typography
-                            variant="h2"
-                            sx={{
-                                fontSize: '1.8rem',
-                                fontWeight: '500',
-                                marginBottom: '12px'
-                            }}
-                        >
-                            Chỉnh sửa thông tin người dùng
-                        </Typography>
-                        <Divider />
-                        <Grid container spacing={2} sx={{ marginTop: '20px' }}>
-                            <Grid item md={8}>
-                                <Box sx={{
-                                    marginBottom: '20px'
-                                }}>
-                                    <Box sx={{
-                                        display: 'flex',
-                                        alignItems: 'center'
-                                    }}>
-                                        <Box component='label' sx={{
-                                            width: '110px',
-                                            textAlign: 'right',
-                                            padding: '0 12px',
-                                            fontSize: '1.5rem',
-                                            color: '#545866'
-                                        }}>
-                                            Tên đăng nhập
-                                        </Box>
-                                        <InputBase
-                                            required
-                                            id="outlined-basic"
-                                            placeholder='Tên đăng nhập'
-                                            variant='outlined'
-                                            sx={{
-                                                flex: 1,
-                                                borderRadius: '2px',
-                                                border: '1px solid rgba(0, 0, 0, 0.3)',
-                                                padding: '4px 8px',
-                                                fontSize: '1.4rem'
-                                            }}
-                                        />
-                                    </Box>
-                                </Box>
-                                <Box sx={{
-                                    marginBottom: '20px'
-                                }}>
-                                    <Box sx={{
-                                        display: 'flex',
-                                        alignItems: 'center'
-                                    }}>
-                                        <Box component='label' sx={{
-                                            width: '110px',
-                                            textAlign: 'right',
-                                            padding: '0 12px',
-                                            fontSize: '1.5rem',
-                                            color: '#545866'
-                                        }}>
-                                            Tên
-                                        </Box>
-                                        <InputBase
-                                            required
-                                            id="outlined-basic"
-                                            placeholder='Nguyễn Văn Đương'
-                                            variant='outlined'
-                                            sx={{
-                                                flex: 1,
-                                                borderRadius: '2px',
-                                                border: '1px solid rgba(0, 0, 0, 0.3)',
-                                                padding: '4px 8px',
-                                                fontSize: '1.4rem'
-                                            }}
-                                        />
-                                    </Box>
-                                </Box>
-                                <Box sx={{
-                                    marginBottom: '20px'
-                                }}>
-                                    <Box sx={{
-                                        display: 'flex',
-                                        alignItems: 'center'
-                                    }}>
-                                        <Box component='label' sx={{
-                                            width: '110px',
-                                            textAlign: 'right',
-                                            padding: '0 12px',
-                                            fontSize: '1.5rem',
-                                            color: '#545866'
-                                        }}>
-                                            Email
-                                        </Box>
-                                        <InputBase
-                                            required
-                                            id="outlined-basic"
-                                            placeholder='duong.nv194260@sis.hust.edu.vn'
-                                            variant='outlined'
-                                            sx={{
-                                                flex: 1,
-                                                borderRadius: '2px',
-                                                border: '1px solid rgba(0, 0, 0, 0.3)',
-                                                padding: '4px 8px',
-                                                fontSize: '1.4rem'
-                                            }}
-                                        />
-                                    </Box>
-                                </Box>
-                                <Box sx={{
-                                    marginBottom: '20px'
-                                }}>
-                                    <Box sx={{
-                                        display: 'flex',
-                                        alignItems: 'center'
-                                    }}>
-                                        <Box component='label' sx={{
-                                            width: '110px',
-                                            textAlign: 'right',
-                                            padding: '0 12px',
-                                            fontSize: '1.5rem',
-                                            color: '#545866'
-                                        }}>
-                                            Số điện thoại
-                                        </Box>
-                                        <InputBase
-                                            required
-                                            id="outlined-basic"
-                                            placeholder='0522081512'
-                                            variant='outlined'
-                                            sx={{
-                                                flex: 1,
-                                                borderRadius: '2px',
-                                                border: '1px solid rgba(0, 0, 0, 0.3)',
-                                                padding: '4px 8px',
-                                                fontSize: '1.4rem'
-                                            }}
-                                        />
-                                    </Box>
-                                </Box>
-                                <Box sx={{
-                                    marginBottom: '20px'
-                                }}>
-                                    <Box sx={{
-                                        display: 'flex',
-                                        alignItems: 'center'
-                                    }}>
-                                        <Box component='label' sx={{
-                                            width: '110px',
-                                            textAlign: 'right',
-                                            padding: '0 12px',
-                                            fontSize: '1.5rem',
-                                            color: '#545866'
-                                        }}>
-
-                                        </Box>
-                                        <Button
-                                            variant='contained'
-                                            sx={{
-                                                borderRadius: '2px',
-                                                color: '#fff',
-                                                flex: '1',
-                                                fontSize: '1.3rem'
-                                            }}>
-                                            Lưu thay đổi
-                                        </Button>
-                                    </Box>
-                                </Box>
-                            </Grid>
-                            <Grid item md={4}>
-                                <Box sx={{
-                                    display: 'flex',
-                                    flexDirection: 'column',
-                                    alignItems: 'center',
-                                    justifyContent: 'center'
-                                }}>
-                                    <Avatar sx={{ width: '120px', height: '120px' }} />
-                                    <Button
-                                        component='label'
-                                        variant="outlined"
-                                        sx={{
-                                            textTransform: 'none',
-                                            color: 'rgba(0, 0, 0, 0.6)',
-                                            border: '1px solid rgba(0, 0, 0, 0.6)',
-                                            borderRadius: '2px',
-                                            marginTop: '20px',
-                                            fontSize: '1.4rem',
-                                            '&:hover': {
-                                                color: 'rgba(0,  0, 0, 0.5)',
-                                                border: '1px solid rgba(0, 0, 0, 0.5)'
-                                            }
-                                        }}
-                                        startIcon={<CameraAlt />}
-                                    >
-                                        Chọn ảnh
-                                        <input type="file" hidden />
-                                    </Button>
-                                </Box>
-                            </Grid>
-                        </Grid>
-                    </Box>
-                </Modal>
+                {/* {openAddProductModal && <Add/>} */}
                 <Modal
                     open={openAddProductModal}
                     onClose={() => setOpenAddProductModal(false)}
@@ -454,19 +326,15 @@ function ManageUser() {
                             Thêm mới sản phẩm
                         </Typography>
                         <Divider />
-                        <Grid container spacing={2} sx={{ marginTop: '20px' }}>
-                            <Grid item md={8}>
+                        <Grid container spacing={2} sx={{ marginTop: '12px' }}>
+                            <Grid item md={9}>
                                 <Box sx={{
                                     marginBottom: '20px'
                                 }}>
                                     <Box sx={{
-                                        display: 'flex',
-                                        alignItems: 'center'
                                     }}>
                                         <Box component='label' sx={{
-                                            width: '110px',
-                                            textAlign: 'right',
-                                            padding: '0 12px',
+                                            width: '100%',
                                             fontSize: '1.5rem',
                                             color: '#545866'
                                         }}>
@@ -479,11 +347,12 @@ function ManageUser() {
                                             variant='outlined'
                                             onChange={(e) => setProductToAdd({ ...productToAdd, name: e.target.value })}
                                             sx={{
-                                                flex: 1,
+                                                marginTop: '12px',
                                                 borderRadius: '2px',
                                                 border: '1px solid rgba(0, 0, 0, 0.3)',
                                                 padding: '4px 8px',
-                                                fontSize: '1.4rem'
+                                                fontSize: '1.4rem',
+                                                width: '100%'
                                             }}
                                         />
                                     </Box>
@@ -492,15 +361,38 @@ function ManageUser() {
                                     marginBottom: '20px'
                                 }}>
                                     <Box sx={{
-                                        display: 'flex',
-                                        alignItems: 'center'
                                     }}>
                                         <Box component='label' sx={{
-                                            width: '110px',
-                                            textAlign: 'right',
-                                            padding: '0 12px',
+                                            width: '100%',
                                             fontSize: '1.5rem',
-                                            color: '#545866'
+                                            color: '#545866',
+                                            marginBottom: '12px'
+                                        }}>
+                                            Mô tả sản phẩm
+                                        </Box>
+                                        <Box sx={{marginTop: '12px'}}>
+                                            <EditorToolbar toolbarId={'t1'} />
+                                            <ReactQuill
+                                                theme="snow"
+                                                value={productToAdd.description}
+                                                onChange={ondescription}
+                                                placeholder={"Nhập mô tả sản phẩm..."}
+                                                modules={modules('t1')}
+                                                formats={formats}
+                                            />
+                                        </Box>
+                                    </Box>
+                                </Box>
+
+                                <Box sx={{
+                                    marginBottom: '20px'
+                                }}>
+                                    <Box >
+                                        <Box component='label' sx={{
+                                            width: '100%',
+                                            fontSize: '1.5rem',
+                                            color: '#545866',
+                                            marginBottom: '12px'
                                         }}>
                                             Giá mới
                                         </Box>
@@ -511,11 +403,12 @@ function ManageUser() {
                                             variant='outlined'
                                             onChange={(e) => setProductToAdd({ ...productToAdd, newPrice: e.target.value })}
                                             sx={{
-                                                flex: 1,
                                                 borderRadius: '2px',
                                                 border: '1px solid rgba(0, 0, 0, 0.3)',
                                                 padding: '4px 8px',
-                                                fontSize: '1.4rem'
+                                                fontSize: '1.4rem',
+                                                width: '100%',
+                                                marginTop: '12px'
                                             }}
                                         />
                                     </Box>
@@ -523,16 +416,12 @@ function ManageUser() {
                                 <Box sx={{
                                     marginBottom: '20px'
                                 }}>
-                                    <Box sx={{
-                                        display: 'flex',
-                                        alignItems: 'center'
-                                    }}>
+                                    <Box>
                                         <Box component='label' sx={{
-                                            width: '110px',
-                                            textAlign: 'right',
-                                            padding: '0 12px',
+                                            width: '100%',
                                             fontSize: '1.5rem',
-                                            color: '#545866'
+                                            color: '#545866',
+                                            marginBottom: '12px'
                                         }}>
                                             Giá cũ
                                         </Box>
@@ -543,11 +432,12 @@ function ManageUser() {
                                             variant='outlined'
                                             onChange={(e) => setProductToAdd({ ...productToAdd, oldPrice: e.target.value })}
                                             sx={{
-                                                flex: 1,
                                                 borderRadius: '2px',
                                                 border: '1px solid rgba(0, 0, 0, 0.3)',
                                                 padding: '4px 8px',
-                                                fontSize: '1.4rem'
+                                                fontSize: '1.4rem',
+                                                width: '100%',
+                                                marginTop: '12px'
                                             }}
                                         />
                                     </Box>
@@ -556,31 +446,31 @@ function ManageUser() {
                                     marginBottom: '20px'
                                 }}>
                                     <Box sx={{
-                                        display: 'flex',
+                                        display: 'block',
                                         alignItems: 'center'
                                     }}>
                                         <Box component='label' sx={{
-                                            width: '110px',
-                                            textAlign: 'right',
-                                            padding: '0 12px',
+                                            width: '100%',
                                             fontSize: '1.5rem',
-                                            color: '#545866'
+                                            color: '#545866',
+                                            marginBottom: '12px'
                                         }}>
                                             Danh mục
                                         </Box>
                                         <Select
                                             // labelId="demo-simple-select-label"
-                                            id="demo-simple-select"
+                                            // id="demo-simple-select"
                                             // value={age}
                                             label="Danh mục"
                                             onChange={(e) => setProductToAdd({ ...productToAdd, categoryId: e.target.value })}
 
                                             sx={{
-                                                flex: 1,
                                                 borderRadius: '2px',
-                                                border: '1px solid rgba(0, 0, 0, 0.3)',
+                                                // border: '1px solid rgba(0, 0, 0, 0.3)',
                                                 // padding: '4px 8px',
-                                                fontSize: '1.4rem'
+                                                fontSize: '1.4rem',
+                                                width: '100%',
+                                                marginTop: '12px'
                                             }}
                                         >
 
@@ -598,44 +488,35 @@ function ManageUser() {
                                 <Box sx={{
                                     marginBottom: '20px'
                                 }}>
-                                    <Box sx={{
-                                        display: 'flex',
-                                        alignItems: 'center'
-                                    }}>
-                                        <Box component='label' sx={{
-                                            width: '110px',
-                                            textAlign: 'right',
-                                            padding: '0 12px',
-                                            fontSize: '1.5rem',
-                                            color: '#545866'
-                                        }}>
 
-                                        </Box>
-                                        <Button
-                                            variant='contained'
-                                            sx={{
-                                                borderRadius: '2px',
-                                                color: '#fff',
-                                                flex: '1',
-                                                fontSize: '1.3rem',
-                                                textTransform: 'none'
-                                            }}
-                                            onClick={handleAddProduct}
-                                        >
+                                    <Button
+                                        variant='contained'
+                                        sx={{
+                                            borderRadius: '2px',
+                                            color: '#fff',
+                                            flex: '1',
+                                            fontSize: '1.3rem',
+                                            textTransform: 'none',
+                                            width: '100%'
+                                        }}
+                                        onClick={handleAddProduct}
+                                    >
 
-                                            Thêm sản phẩm
-                                        </Button>
-                                    </Box>
+                                        Thêm sản phẩm
+                                    </Button>
                                 </Box>
                             </Grid>
-                            <Grid item md={4}>
+                            <Grid item md={3}>
                                 <Box sx={{
                                     display: 'flex',
                                     flexDirection: 'column',
                                     alignItems: 'center',
                                     justifyContent: 'center'
                                 }}>
-                                    <Avatar sx={{ width: '120px', height: '120px' }} />
+                                    <Avatar
+                                        sx={{ width: '120px', height: '120px' }}
+                                        src={productToAdd?.thumbnail}
+                                    />
                                     <Button
                                         component='label'
                                         variant="outlined"
@@ -654,7 +535,245 @@ function ManageUser() {
                                         startIcon={<CameraAlt />}
                                     >
                                         Chọn ảnh
-                                        <input type="file" hidden />
+                                        <input type="file" hidden onChange={handleUploadImage} />
+                                    </Button>
+                                </Box>
+                            </Grid>
+                        </Grid>
+                    </Box>
+                </Modal>
+
+                <Modal
+                    open={openUpdateModal}
+                    onClose={() => setOpenUpdateModal(false)}
+                    aria-labelledby="modal-modal-title"
+                    aria-describedby="modal-modal-description"
+                >
+                    <Box sx={style}>
+                        <Typography
+                            variant="h2"
+                            sx={{
+                                fontSize: '1.8rem',
+                                fontWeight: '500',
+                                marginBottom: '12px'
+                            }}
+                        >
+                            Cập nhật sản phẩm
+                        </Typography>
+                        <Divider />
+                        <Grid container spacing={2} sx={{ marginTop: '12px' }}>
+                            <Grid item md={9}>
+                                <Box sx={{
+                                    marginBottom: '20px'
+                                }}>
+                                    <Box sx={{
+                                    }}>
+                                        <Box component='label' sx={{
+                                            width: '100%',
+                                            fontSize: '1.5rem',
+                                            color: '#545866'
+                                        }}>
+                                            Tên sản phẩm
+                                        </Box>
+                                        <InputBase
+                                            required
+                                            id="outlined-basic"
+                                            placeholder='Nhập tên sản phẩm'
+                                            variant='outlined'
+                                            onChange={(e) => setProductToUpdate({ ...productToUpdate, name: e.target.value })}
+                                            sx={{
+                                                marginTop: '12px',
+                                                borderRadius: '2px',
+                                                border: '1px solid rgba(0, 0, 0, 0.3)',
+                                                padding: '4px 8px',
+                                                fontSize: '1.4rem',
+                                                width: '100%'
+                                            }}
+                                            value={productToUpdate.name}
+                                        />
+                                    </Box>
+                                </Box>
+                                <Box sx={{
+                                    marginBottom: '20px'
+                                }}>
+                                    <Box sx={{
+                                    }}>
+                                        <Box component='label' sx={{
+                                            width: '100%',
+                                            fontSize: '1.5rem',
+                                            color: '#545866',
+                                            marginBottom: '12px'
+                                        }}>
+                                            Mô tả sản phẩm
+                                        </Box>
+                                        <Box sx={{marginTop: '12px'}}>
+                                            <EditorToolbar toolbarId={'t2'} />
+                                            <ReactQuill
+                                                theme="snow"
+                                                value={productToUpdate.description}
+                                                onChange={ondescription2}
+                                                placeholder={"Nhập mô tả sản phẩm..."}
+                                                modules={modules('t2')}
+                                                formats={formats}
+                                            />
+                                        </Box>
+                                    </Box>
+                                </Box>
+
+                                <Box sx={{
+                                    marginBottom: '20px'
+                                }}>
+                                    <Box >
+                                        <Box component='label' sx={{
+                                            width: '100%',
+                                            fontSize: '1.5rem',
+                                            color: '#545866',
+                                            marginBottom: '12px'
+                                        }}>
+                                            Giá mới
+                                        </Box>
+                                        <InputBase
+                                            required
+                                            id="outlined-basic"
+                                            placeholder='Nhập giá mới'
+                                            variant='outlined'
+                                            onChange={(e) => setProductToUpdate({ ...productToUpdate, newPrice: e.target.value })}
+                                            sx={{
+                                                borderRadius: '2px',
+                                                border: '1px solid rgba(0, 0, 0, 0.3)',
+                                                padding: '4px 8px',
+                                                fontSize: '1.4rem',
+                                                width: '100%',
+                                                marginTop: '12px'
+                                            }}
+                                            value={productToUpdate?.newPrice}
+                                        />
+                                    </Box>
+                                </Box>
+                                <Box sx={{
+                                    marginBottom: '20px'
+                                }}>
+                                    <Box>
+                                        <Box component='label' sx={{
+                                            width: '100%',
+                                            fontSize: '1.5rem',
+                                            color: '#545866',
+                                            marginBottom: '12px'
+                                        }}>
+                                            Giá cũ
+                                        </Box>
+                                        <InputBase
+                                            required
+                                            id="outlined-basic"
+                                            placeholder='Nhập giá cũ'
+                                            variant='outlined'
+                                            onChange={(e) => setProductToUpdate({ ...productToUpdate, oldPrice: e.target.value })}
+                                            sx={{
+                                                borderRadius: '2px',
+                                                border: '1px solid rgba(0, 0, 0, 0.3)',
+                                                padding: '4px 8px',
+                                                fontSize: '1.4rem',
+                                                width: '100%',
+                                                marginTop: '12px'
+                                            }}
+                                            value={productToUpdate.oldPrice}
+                                        />
+                                    </Box>
+                                </Box>
+                                <Box sx={{
+                                    marginBottom: '20px'
+                                }}>
+                                    <Box sx={{
+                                        display: 'block',
+                                        alignItems: 'center'
+                                    }}>
+                                        <Box component='label' sx={{
+                                            width: '100%',
+                                            fontSize: '1.5rem',
+                                            color: '#545866',
+                                            marginBottom: '12px'
+                                        }}>
+                                            Danh mục
+                                        </Box>
+                                        <Select
+                                            // labelId="demo-simple-select-label"
+                                            // id="demo-simple-select"
+                                            // value={age}
+                                            label="Danh mục"
+                                            onChange={(e) => setProductToUpdate({ ...productToUpdate, categoryId: e.target.value })}
+                                            value={productToUpdate.categoryId}
+                                            sx={{
+                                                borderRadius: '2px',
+                                                // border: '1px solid rgba(0, 0, 0, 0.3)',
+                                                // padding: '4px 8px',
+                                                fontSize: '1.4rem',
+                                                width: '100%',
+                                                marginTop: '12px'
+                                            }}
+                                        >
+
+                                            {
+                                                categories.map((categoryItem, index) => {
+                                                    return (
+                                                        <MenuItem value={categoryItem.id}>{categoryItem.name}</MenuItem>
+                                                    )
+                                                })
+                                            }
+
+                                        </Select>
+                                    </Box>
+                                </Box>
+                                <Box sx={{
+                                    marginBottom: '20px'
+                                }}>
+
+                                    <Button
+                                        variant='contained'
+                                        sx={{
+                                            borderRadius: '2px',
+                                            color: '#fff',
+                                            flex: '1',
+                                            fontSize: '1.3rem',
+                                            textTransform: 'none',
+                                            width: '100%'
+                                        }}
+                                        onClick={handleUpdateProduct}
+                                    >
+
+                                        Cập nhật sản phẩm
+                                    </Button>
+                                </Box>
+                            </Grid>
+                            <Grid item md={3}>
+                                <Box sx={{
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    alignItems: 'center',
+                                    justifyContent: 'center'
+                                }}>
+                                    <Avatar
+                                        sx={{ width: '120px', height: '120px' }}
+                                        src={productToUpdate?.thumbnail}
+                                    />
+                                    <Button
+                                        component='label'
+                                        variant="outlined"
+                                        sx={{
+                                            textTransform: 'none',
+                                            color: 'rgba(0, 0, 0, 0.6)',
+                                            border: '1px solid rgba(0, 0, 0, 0.6)',
+                                            borderRadius: '2px',
+                                            marginTop: '20px',
+                                            fontSize: '1.4rem',
+                                            '&:hover': {
+                                                color: 'rgba(0,  0, 0, 0.5)',
+                                                border: '1px solid rgba(0, 0, 0, 0.5)'
+                                            }
+                                        }}
+                                        startIcon={<CameraAlt />}
+                                    >
+                                        Chọn ảnh
+                                        <input type="file" hidden onChange={handleUploadImage} />
                                     </Button>
                                 </Box>
                             </Grid>
@@ -666,4 +785,4 @@ function ManageUser() {
     )
 }
 
-export default ManageUser
+export default ManageProduct
